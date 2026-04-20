@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { createClient } from "@/lib/supabase/server";
@@ -29,7 +30,10 @@ export default async function EditTenantPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <header>
+      <header className="space-y-1">
+        <Link href="/dashboard/tenants" className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">
+          ← Volver
+        </Link>
         <h1 className="text-base font-medium tracking-tight text-zinc-900">Editar Tenant</h1>
       </header>
       <EditTenantForm id={tenant.id} defaultNombre={tenant.nombre ?? ""} />

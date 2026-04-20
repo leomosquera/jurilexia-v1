@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 import { TenantsTable } from "./tenants-table";
 import { ToastrFeedback } from "@/components/feedback/toastr-feedback";
 
@@ -32,13 +33,18 @@ export default async function TenantsPage({ searchParams }: Props) {
       />
 
       <header className="flex items-center justify-between">
-        <h1 className="text-base font-medium tracking-tight text-zinc-900">
-          Tenants
-        </h1>
-
-        <Link href="/dashboard/tenants/create">
-          <Button size="sm">Nuevo</Button>
-        </Link>
+      <PageHeader
+          title="Tenants"
+          breadcrumb={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Tenants" },
+          ]}
+          actions={
+            <Link href="/dashboard/tenants/create">
+              <Button size="sm">Nuevo</Button>
+            </Link>
+          }
+        />
       </header>
 
       <TenantsTable tenants={tenants ?? []} />

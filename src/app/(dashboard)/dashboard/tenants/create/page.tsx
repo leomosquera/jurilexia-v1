@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
+import { PageHeader } from "@/components/ui/page-header";
 import { CreateTenantForm } from "./form";
 
 export default async function CreateTenantPage() {
@@ -11,9 +13,14 @@ export default async function CreateTenantPage() {
 
   return (
     <div className="space-y-8">
-      <header>
-        <h1 className="text-base font-medium tracking-tight text-zinc-900">Nuevo Tenant</h1>
-      </header>
+      <PageHeader
+        title="Nuevo Tenant"
+        breadcrumb={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Tenants", href: "/dashboard/tenants" },
+          { label: "Nuevo" },
+        ]}
+      />
       <CreateTenantForm />
     </div>
   );
