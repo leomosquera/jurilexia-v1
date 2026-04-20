@@ -1,8 +1,6 @@
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { createTenant } from "./actions";
+import { CreateTenantForm } from "./form";
 
 export default async function CreateTenantPage() {
   const session = await requireAuth();
@@ -16,17 +14,7 @@ export default async function CreateTenantPage() {
       <header>
         <h1 className="text-base font-medium tracking-tight text-zinc-900">Nuevo Tenant</h1>
       </header>
-
-      <form action={createTenant} className="space-y-4 max-w-sm">
-        <Input
-          id="nombre"
-          name="nombre"
-          label="Nombre"
-          placeholder="Nombre del tenant"
-          required
-        />
-        <Button type="submit" size="sm">Guardar</Button>
-      </form>
+      <CreateTenantForm />
     </div>
   );
 }

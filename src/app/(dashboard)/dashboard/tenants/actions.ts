@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export async function deleteTenant(id: string) {
@@ -8,5 +8,5 @@ export async function deleteTenant(id: string) {
 
   await supabase.from("tenant").delete().eq("id", id);
 
-  revalidatePath("/dashboard/tenants");
+  redirect("/dashboard/tenants?success=delete");
 }

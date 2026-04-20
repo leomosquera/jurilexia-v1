@@ -1,9 +1,7 @@
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { createClient } from "@/lib/supabase/server";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { updateTenant } from "./actions";
+import { EditTenantForm } from "./form";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -34,16 +32,7 @@ export default async function EditTenantPage({ params }: Props) {
       <header>
         <h1 className="text-base font-medium tracking-tight text-zinc-900">Editar Tenant</h1>
       </header>
-
-      <form action={updateTenant.bind(null, tenant.id)} className="space-y-4 max-w-sm">
-        <Input
-          id="nombre"
-          name="nombre"
-          label="Nombre"
-          defaultValue={tenant.nombre ?? ""}
-        />
-        <Button type="submit" size="sm">Guardar</Button>
-      </form>
+      <EditTenantForm id={tenant.id} defaultNombre={tenant.nombre ?? ""} />
     </div>
   );
 }
