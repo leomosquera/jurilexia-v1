@@ -1,16 +1,16 @@
+import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { createClient } from "@/lib/supabase/server";
 import { Table, TableHeader, TableRow, TableCell } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 export default async function TenantsPage() {
   const session = await requireAuth();
 
   if (!isSuperadmin(session)) {
     return (
-      <div className="p-6">
-        <p className="text-sm text-zinc-500">No autorizado</p>
-      </div>
+      <p className="text-sm text-zinc-500">No autorizado</p>
     );
   }
 
@@ -20,8 +20,13 @@ export default async function TenantsPage() {
     .select("id, nombre");
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-sm font-medium text-zinc-900">Tenants</h1>
+    <div className="space-y-8">
+      <header className="flex items-center justify-between">
+        <h1 className="text-base font-medium tracking-tight text-zinc-900">Tenants</h1>
+        <Link href="/dashboard/tenants/create">
+          <Button size="sm">Nuevo</Button>
+        </Link>
+      </header>
       <Table>
         <TableHeader>
           <TableRow>
