@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 export type SessionContext = {
   authUser: { id: string; email: string | null };
   appUser: { id: string; nombre: string | null; auth_user_id: string };
-  membership: { id: string; tenant_id: string; rol_id: string | null } | null;
+  membership: { id: string; tenant_id: string; rol_id: string | null; rol?: { codigo: string } } | null;
   tenant: { id: string; nombre: string | null } | null;
 };
 
@@ -29,7 +29,7 @@ export async function getSessionContext(): Promise<SessionContext | null> {
   // 3. Resolve first matching membership from public.usuario_tenant
   const { data: membership } = await supabase
     .from("usuario_tenant")
-    .select("id, tenant_id, rol_id")
+    .select("id, tenant_id, rol_id, rol(codigo)")
     .eq("usuario_id", appUser.id)
     .limit(1)
     .maybeSingle();
@@ -47,10 +47,21 @@ export async function getSessionContext(): Promise<SessionContext | null> {
     tenant = tenantData ?? null;
   }
 
+  const normalizedMembership = membership
+    ? {
+        id: membership.id,
+        tenant_id: membership.tenant_id,
+        rol_id: membership.rol_id,
+        rol: Array.isArray(membership.rol)
+            ? membership.rol[0]
+            : membership.rol,
+        }
+    : null;
+
   return {
     authUser: { id: authUser.id, email: authUser.email ?? null },
     appUser,
-    membership: membership ?? null,
+    membership: normalizedMembership,
     tenant,
   };
 }
