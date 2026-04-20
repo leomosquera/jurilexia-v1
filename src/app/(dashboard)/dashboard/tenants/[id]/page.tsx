@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { createClient } from "@/lib/supabase/server";
+import { PageHeader } from "@/components/ui/page-header";
 import { EditTenantForm } from "./form";
 
 type Props = {
@@ -20,7 +20,7 @@ export default async function EditTenantPage({ params }: Props) {
   const supabase = await createClient();
   const { data: tenant } = await supabase
     .from("tenant")
-    .select("id, nombre")
+    .select("id, nombre, email, telefono, logo_url")
     .eq("id", id)
     .single();
 
@@ -30,13 +30,21 @@ export default async function EditTenantPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-1">
-        <Link href="/dashboard/tenants" className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">
-          ← Volver
-        </Link>
-        <h1 className="text-base font-medium tracking-tight text-zinc-900">Editar Tenant</h1>
-      </header>
-      <EditTenantForm id={tenant.id} defaultNombre={tenant.nombre ?? ""} />
+      <PageHeader
+        title="Editar Tenant"
+        breadcrumb={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Tenants", href: "/dashboard/tenants" },
+          { label: "Editar" },
+        ]}
+      />
+      <EditTenantForm
+        id={tenant.id}
+        defaultNombre={tenant.nombre ?? ""}
+        defaultEmail={tenant.email ?? ""}
+        defaultTelefono={tenant.telefono ?? ""}
+        defaultLogoUrl={tenant.logo_url ?? ""}
+      />
     </div>
   );
 }

@@ -20,6 +20,25 @@ export function CreateTenantForm() {
         placeholder="Nombre del tenant"
         required
       />
+      <Input
+        id="email"
+        name="email"
+        type="email"
+        label="Email"
+        placeholder="contacto@empresa.com"
+      />
+      <Input
+        id="telefono"
+        name="telefono"
+        label="Teléfono"
+        placeholder="+54 11 0000-0000"
+      />
+      <Input
+        id="logo_url"
+        name="logo_url"
+        label="Logo URL"
+        placeholder="https://ejemplo.com/logo.png"
+      />
       {state?.error && (
         <p className="text-xs text-red-500">{state.error}</p>
       )}
