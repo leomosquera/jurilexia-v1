@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { getSessionContext } from "@/lib/auth/get-session-context"
+import MainLayout from "@/components/layout/MainLayout"
 
 export default async function DashboardLayout({
   children,
@@ -12,5 +13,5 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
-  return <>{children}</>
+  return <MainLayout>{children}</MainLayout>
 }
