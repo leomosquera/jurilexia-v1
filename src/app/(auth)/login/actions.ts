@@ -12,10 +12,13 @@ export async function loginAction(
 
   const supabase = await createClient()
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
+  
+  console.log("LOGIN DATA:", data)
+  console.log("LOGIN ERROR:", error)
 
   if (error) {
     console.log("LOGIN ERROR:", error)

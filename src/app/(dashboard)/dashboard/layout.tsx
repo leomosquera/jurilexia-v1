@@ -1,17 +1,18 @@
-import { redirect } from "next/navigation"
-import { getSessionContext } from "@/lib/auth/get-session-context"
-import MainLayout from "@/components/layout/MainLayout"
+import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/auth/require-auth";
+import MainLayout from "@/components/layout/MainLayout";
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const session = await getSessionContext()
+  const ctx = await requireAuth();
 
-  if (!session) {
-    redirect("/login")
+  // opcional: validar algo
+  if (!ctx) {
+    redirect("/login");
   }
 
-  return <MainLayout>{children}</MainLayout>
+  return <MainLayout>{children}</MainLayout>;
 }

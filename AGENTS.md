@@ -33,27 +33,39 @@ Multi-tenant architecture:
 
 # Architecture Rules
 
-- Supabase handles authentication ONLY
-- Application data comes from internal tables (usuario, tenant, etc.)
-- Do NOT mix auth logic with business logic
+- Supabase handles authentication.
+- Application data comes from internal tables such as usuario, tenant, cliente, persona, etc.
+- Do NOT mix auth logic with business logic.
 
-- Server logic must live in:
-  - Server Actions
-  - lib/*
-- UI must NEVER contain business logic
+- Business data access must follow this flow:
+  UI → lib/api → app/api → lib/server/services → lib/server/repositories → Supabase
+
+- Server-side business logic must live in:
+  - lib/server/services
+  - lib/server/repositories
+  - lib/server/context
+  - lib/server/validators
+  - lib/server/errors
+
+- UI must NEVER contain Supabase business queries.
+- Client components may call lib/api helpers only.
 
 # CRUD Rules
 
-- CRUD must be implemented using:
-  - Server Actions (preferred)
-  - Supabase queries from server side
+- CRUD must be implemented through internal API routes.
+- Client-side UI must call helper functions from lib/api.
+- app/api route handlers must be thin controllers only.
+- Business rules must live in lib/server/services.
+- Supabase table access must live in lib/server/repositories.
 
 - DO NOT:
-  - create unnecessary API layers
-  - introduce external state managers
-  - duplicate logic
+  - use Server Actions for business CRUD
+  - query business tables directly from client components
+  - put Supabase .from(...) calls in pages or UI components
+  - duplicate DB logic between API routes and pages
 
-- Keep CRUD simple, explicit and readable
+- Server Components may call services directly for SSR reads when appropriate.
+- Client Components must use lib/api.
 
 # Auth & Session Rules
 
@@ -105,16 +117,23 @@ Multi-tenant architecture:
 
 # Current Phase
 
-We are currently implementing:
+Implemented:
+1. Supabase Auth login
+2. Session context using:
+   auth.users → usuario → usuario_tenant → tenant
+   auth.users → usuario → usuario_rol → rol
+3. Protected dashboard routes
+4. RLS basic policies for usuario, usuario_tenant, usuario_rol, rol, tenant, cliente and persona
+5. Tenant CRUD migrated to API/service/repository architecture
+6. Initial cliente listing started
 
-1. Authentication (Supabase)
-2. Session context (usuario + tenant)
-3. Protected routes
+Current focus:
+- Cliente module
+- Build it step by step using the same architecture:
+  UI → lib/api → app/api → service → repository → Supabase
 
-Next steps (NOT NOW):
-- Superadmin CRUD (tenant + users)
-- Role-based access
-- Full CRUD modules
+Next step:
+- Replace the temporary create-cliente button with a proper CreateClienteForm.
 
 # UI Kit Protection
 
@@ -131,10 +150,14 @@ Next steps (NOT NOW):
 
 # Data Access Rules
 
-- Supabase queries must be executed from server-side code
-- Do NOT query business tables directly from client components
-- Keep data access inside lib/* or Server Actions
-- Prefer small helper functions over large mixed files
+- Supabase queries for business tables must live in lib/server/repositories.
+- Services orchestrate business rules and call repositories.
+- API routes call services.
+- Client components call lib/api helpers.
+- Pages should compose components and may call services only if they are Server Components.
+
+- Authentication may use Supabase Auth directly through lib/supabase/server or lib/supabase/client.
+- Business data must not be queried directly from client components.
 
 # Prompt Execution Rules
 
@@ -144,10 +167,27 @@ Next steps (NOT NOW):
 
 # File / Folder Discipline
 
-- Respect the existing project structure
-- Do NOT move files unless explicitly requested
-- Do NOT rename files, folders, routes, or imports unless explicitly requested
-- New auth/session helpers must stay inside:
-  - lib/auth/*
-  - lib/supabase/*
-- Route files must remain inside the existing app/* structure
+- Respect the existing project structure.
+- Do NOT move files unless explicitly requested.
+- Do NOT rename files, folders, routes, or imports unless explicitly requested.
+
+- Domain UI components live in:
+  components/modules/<domain>/
+
+- Generic reusable UI components live in:
+  components/ui/
+
+- Layout components live in:
+  components/layout/
+
+- Frontend API helpers live in:
+  lib/api/
+
+- Server business logic lives in:
+  lib/server/
+
+- Supabase clients live in:
+  lib/supabase/
+
+- Auth helpers live in:
+  lib/auth/

@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-export async function updateSession(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request,
   })
@@ -15,16 +15,26 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
+          cookiesToSet.forEach(({ name, value, options }) =>
             request.cookies.set(name, value)
-            response.cookies.set(name, value, options)
+          )
+          response = NextResponse.next({
+            request,
           })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
         },
       },
     }
   )
 
+  // 🔥 IMPORTANTE: esto mantiene la sesión viva
   await supabase.auth.getUser()
 
   return response
+}
+
+export const config = {
+  matcher: ["/login", "/dashboard/:path*"],
 }

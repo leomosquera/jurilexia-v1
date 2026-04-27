@@ -1,23 +1,31 @@
-import { getSessionContext } from "@/lib/auth/get-session-context"
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export default async function DashboardPage() {
-  const session = await getSessionContext()
+  const ctx = await requireAuth();
 
-  if (!session) return null;
-
-  const { authUser, appUser, tenant } = session
+  const { user, usuario, tenant_id, roles } = ctx;
 
   return (
     <div className="p-6 space-y-1">
       <p className="text-sm text-zinc-500">
-        <span className="font-medium text-zinc-700">Email:</span> {authUser?.email ?? "—"}
+        <span className="font-medium text-zinc-700">Email:</span>{" "}
+        {user?.email ?? "—"}
       </p>
+
       <p className="text-sm text-zinc-500">
-        <span className="font-medium text-zinc-700">Username:</span> {appUser?.username ?? "—"}
+        <span className="font-medium text-zinc-700">Usuario ID:</span>{" "}
+        {usuario?.id ?? "—"}
       </p>
+
       <p className="text-sm text-zinc-500">
-        <span className="font-medium text-zinc-700">Tenant:</span> {tenant?.nombre ?? "—"}
+        <span className="font-medium text-zinc-700">Tenant ID:</span>{" "}
+        {tenant_id ?? "—"}
+      </p>
+
+      <p className="text-sm text-zinc-500">
+        <span className="font-medium text-zinc-700">Roles:</span>{" "}
+        {roles?.join(", ") || "—"}
       </p>
     </div>
-  )
+  );
 }

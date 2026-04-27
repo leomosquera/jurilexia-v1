@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
 import { PageHeader } from "@/components/ui/page-header";
-import { CreateTenantForm } from "./form";
+import { CreateTenantForm } from "@/components/modules/tenants/CreateTenantForm";
 
 export default async function CreateTenantPage() {
   const session = await requireAuth();
@@ -21,6 +20,7 @@ export default async function CreateTenantPage() {
           { label: "Nuevo" },
         ]}
       />
+
       <CreateTenantForm />
     </div>
   );

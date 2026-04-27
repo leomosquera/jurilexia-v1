@@ -1,8 +1,10 @@
 import { requireAuth } from "@/lib/auth/require-auth";
 import { isSuperadmin } from "@/lib/auth/is-superadmin";
-import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/page-header";
-import { EditTenantForm } from "./form";
+import { EditTenantForm } from "@/components/modules/tenants/EditTenantForm";
+
+import { getServerContext } from "@/lib/server/context/getServerContext";
+import { tenantService } from "@/lib/server/services/tenant.service";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -17,12 +19,8 @@ export default async function EditTenantPage({ params }: Props) {
 
   const { id } = await params;
 
-  const supabase = await createClient();
-  const { data: tenant } = await supabase
-    .from("tenant")
-    .select("id, nombre, email, telefono, logo_url")
-    .eq("id", id)
-    .single();
+  const ctx = await getServerContext();
+  const tenant = await tenantService.getById(ctx, id);
 
   if (!tenant) {
     return <p className="text-sm text-zinc-500">Tenant no encontrado</p>;
