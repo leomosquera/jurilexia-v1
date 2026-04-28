@@ -1,39 +1,37 @@
+import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
+import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
 import { clienteService } from "@/lib/server/services/cliente.service";
-import { createCliente } from "@/lib/api/cliente.api";
-import { CreateClienteButton } from "@/components/modules/clientes/create-cliente-button";
+import { ClientesTable } from "@/components/modules/clientes/clientes-table";
 
 export default async function ClientesPage() {
   const ctx = await requireAuth();
 
-  const clientes = await clienteService.getAll(ctx);
+  const rawClientes = await clienteService.getAll(ctx);
+
+  const clientes = rawClientes.map((c: any) => {
+    const persona = Array.isArray(c.persona) ? c.persona[0] : c.persona;
+
+    return {
+      id: c.id,
+      nombre: `${persona?.nombre ?? ""} ${persona?.apellido ?? ""}`.trim(),
+      email: persona?.email ?? "",
+    };
+  });
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-lg font-medium">Clientes</h1>
-      <CreateClienteButton />
+    <div className="space-y-8">
+      <PageHeader
+        title="Clientes"
+        actions={
+          <Link href="/clientes/create">
+            <Button size="sm">Nuevo</Button>
+          </Link>
+        }
+      />
 
-      <div className="space-y-2">
-        {clientes.map((c: any) => (
-          <div
-            key={c.id}
-            className="border rounded p-3 text-sm text-zinc-700"
-          >
-            <div>
-              {c.persona?.nombre} {c.persona?.apellido}
-            </div>
-            <div className="text-xs text-zinc-400">
-              {c.persona?.email}
-            </div>
-          </div>
-        ))}
-
-        {clientes.length === 0 && (
-          <p className="text-sm text-zinc-400">
-            No hay clientes
-          </p>
-        )}
-      </div>
+      <ClientesTable clientes={clientes} />
     </div>
   );
 }
