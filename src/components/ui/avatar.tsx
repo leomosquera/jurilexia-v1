@@ -57,7 +57,9 @@ export function Avatar({
     <span
       aria-label={label}
       title={label}
-      className={`inline-flex select-none items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200/90 text-zinc-700 ${shell}`}
+      className={`inline-flex select-none items-center justify-center ${shell} ${
+        className || "bg-gradient-to-br from-zinc-100 to-zinc-200/90 text-zinc-700"
+      }`}
     >
       {initials}
     </span>

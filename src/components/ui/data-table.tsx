@@ -38,11 +38,11 @@ export function DataTable<T,>({
           <caption className="sr-only">{caption}</caption>
         )}
         <thead>
-          <tr className="border-b border-zinc-200">
+          <tr className="border-b border-gray-200">
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 py-2.5 text-xs font-medium text-zinc-500 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
+                className={`px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
               >
                 {col.header}
               </th>
@@ -54,7 +54,7 @@ export function DataTable<T,>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-4 py-8 text-center text-sm text-zinc-400"
+                className="px-3 py-6 text-center text-sm text-gray-500"
               >
                 {emptyState ?? "No data"}
               </td>
@@ -63,12 +63,12 @@ export function DataTable<T,>({
             rows.map((row, index) => (
               <tr
                 key={getRowKey(row)}
-                className="border-b border-zinc-100 transition-colors duration-100 last:border-0 hover:bg-zinc-50"
+                className="border-b border-gray-200 transition-colors duration-100 last:border-0 hover:bg-gray-50"
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`px-4 py-2.5 text-zinc-700 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
+                    className={`px-3 py-2 text-sm text-gray-900 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
                   >
                     {col.render(row, index)}
                   </td>

@@ -14,8 +14,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
 
-          <main className="min-h-[calc(100vh-3.75rem)] px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-            <div className="mx-auto w-full max-w-6xl">{children}</div>
+          <main className="min-h-[calc(100vh-3.75rem)] px-5 py-6 sm:px-6 lg:px-8 lg:py-8">
+            {children}
           </main>
         </div>
       </div>

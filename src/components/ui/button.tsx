@@ -20,21 +20,21 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 focus-visible:ring-indigo-500/30 disabled:bg-indigo-300",
+    "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 focus-visible:ring-blue-500/30 disabled:bg-blue-300",
   secondary:
-    "border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 active:bg-zinc-100 focus-visible:ring-zinc-500/20 disabled:text-zinc-400",
+    "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 active:bg-gray-100 focus-visible:ring-gray-500/20 disabled:text-gray-400",
   ghost:
-    "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-200 focus-visible:ring-zinc-500/20 disabled:text-zinc-300",
+    "text-gray-600 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 focus-visible:ring-gray-500/20 disabled:text-gray-300",
   "outline-primary":
-    "border border-indigo-400 text-indigo-600 hover:bg-indigo-50 active:bg-indigo-100 focus-visible:ring-indigo-500/30 disabled:border-indigo-200 disabled:text-indigo-400",
+    "border border-blue-500 text-blue-600 hover:bg-blue-50 active:bg-blue-100 focus-visible:ring-blue-500/30 disabled:border-blue-200 disabled:text-blue-400",
   "outline-secondary":
-    "border border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 active:bg-zinc-100 focus-visible:ring-zinc-500/20 disabled:border-zinc-200 disabled:text-zinc-400",
+    "border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 active:bg-gray-100 focus-visible:ring-gray-500/20 disabled:border-gray-200 disabled:text-gray-400",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-7 px-2.5 text-xs",
+  sm: "h-6 px-2.5 text-xs",
   md: "h-8 px-3 text-sm",
-  lg: "h-9 px-4 text-sm",
+  lg: "h-9 px-3.5 text-sm",
 };
 
 const spinnerSize: Record<ButtonSize, string> = {
@@ -81,7 +81,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-lg font-medium outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-md font-medium outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50 ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
       {...props}
     >
       {loading ? (

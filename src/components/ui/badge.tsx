@@ -8,10 +8,10 @@ export type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 };
 
 const variantStyles: Record<BadgeVariant, string> = {
-  success: "bg-emerald-50 text-emerald-700 ring-emerald-200/80",
-  warning: "bg-amber-50 text-amber-700 ring-amber-200/80",
-  danger: "bg-red-50 text-red-700 ring-red-200/80",
-  neutral: "bg-zinc-100 text-zinc-600 ring-zinc-200/80",
+  success: "bg-green-100 text-green-700",
+  warning: "bg-yellow-100 text-yellow-700",
+  danger: "bg-red-100 text-red-700",
+  neutral: "bg-gray-100 text-gray-600",
 };
 
 export function Badge({
@@ -22,7 +22,7 @@ export function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ${variantStyles[variant]} ${className}`}
+      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium ${variantStyles[variant]} ${className}`}
       {...props}
     >
       {children}

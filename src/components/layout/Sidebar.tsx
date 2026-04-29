@@ -33,17 +33,17 @@ function groupIsActive(item: NavItem, pathname: string): boolean {
 // ── Shared token strings ───────────────────────────────────────────────────────
 
 const itemBase =
-  "relative flex w-full items-center gap-2 rounded-md text-[13px] font-medium outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-indigo-500/30";
+  "relative flex w-full items-center gap-2 rounded-md text-[13px] font-medium outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-white/20";
 
-const stateActive = "bg-indigo-50 text-indigo-700";
-const stateIdle   = "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900";
+const stateActive = "bg-white/10 text-white";
+const stateIdle   = "text-gray-300 hover:bg-white/10 hover:text-white";
 
 // ── Active left-edge bar ───────────────────────────────────────────────────────
 
 function ActiveBar() {
   return (
-    <span
-      className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-indigo-500"
+      <span
+      className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-blue-400"
       aria-hidden
     />
   );
@@ -70,7 +70,7 @@ function NavLinkRow({
         {active && <ActiveBar />}
         <span
           className={`flex size-[18px] shrink-0 items-center justify-center ${
-            active ? "text-indigo-600" : "text-zinc-400"
+            active ? "text-white" : "text-gray-400"
           }`}
         >
           <NavIcon id={item.iconId} className="size-[1.05rem]" />
@@ -103,13 +103,13 @@ function NavGroupRow({
         onClick={onToggle}
         aria-expanded={open}
         className={`${itemBase} h-8 cursor-pointer px-2 ${
-          childActive ? "text-zinc-900" : stateIdle
+          childActive ? "text-white" : stateIdle
         }`}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
     <span
       className={`flex size-[18px] shrink-0 items-center justify-center ${
-        childActive ? "text-indigo-600" : "text-zinc-400"
+        childActive ? "text-white" : "text-gray-400"
       }`}
     >
       <NavIcon id={item.iconId} className="size-[1.05rem]" />
@@ -118,7 +118,7 @@ function NavGroupRow({
     <span className="truncate">{item.label}</span>
   </div>
         <IconChevronDown
-          className={`size-3.5 shrink-0 text-zinc-400 transition-transform duration-200 ${
+          className={`size-3.5 shrink-0 text-gray-400 transition-transform duration-200 ${
             open ? "rotate-180" : ""
           }`}
         />
@@ -131,7 +131,7 @@ function NavGroupRow({
         }`}
       >
         <div className="overflow-hidden">
-          <ul className="ml-[22px] space-y-0.5 border-l border-zinc-200 py-1 pl-3">
+          <ul className="ml-[22px] space-y-0.5 border-l border-white/10 py-1 pl-3">
             {item.children?.map((child) => (
               <ChildRow key={child.id} child={child} pathname={pathname} />
             ))}
@@ -154,7 +154,7 @@ function ChildRow({
     <li>
       <Link
         href={child.href}
-        className={`${itemBase} h-7 px-2 ${active ? stateActive : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"}`}
+        className={`${itemBase} h-7 px-2 ${active ? stateActive : "text-gray-400 hover:bg-white/10 hover:text-white"}`}
       >
         {active && <ActiveBar />}
         <span className="min-w-0 flex-1 truncate">{child.label}</span>
@@ -180,12 +180,12 @@ function CollapsedItem({
     ? matchPath(pathname, item.href)
     : groupIsActive(item, pathname);
 
-  const cls = `flex size-8 items-center justify-center rounded-md outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-indigo-500/30 ${
+  const cls = `flex size-8 items-center justify-center rounded-md outline-none transition-colors duration-100 focus-visible:ring-2 focus-visible:ring-white/20 ${
     active
-      ? "bg-indigo-50 text-indigo-600"
+      ? "bg-white/10 text-white"
       : popoverOpen
-      ? "bg-zinc-100 text-zinc-700"
-      : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+      ? "bg-white/10 text-gray-200"
+      : "text-gray-400 hover:bg-white/10 hover:text-gray-200"
   }`;
 
   if (!item.children && item.href) {
@@ -290,25 +290,25 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-zinc-200 bg-white transition-[width] duration-200 ease-out ${
+      className={`sticky top-0 flex h-screen shrink-0 flex-col border-r border-white/10 bg-blue-950 transition-[width] duration-200 ease-out ${
         collapsed ? "w-14" : "w-[220px]"
       }`}
     >
       {/* ── Brand ── */}
       <div
-        className={`flex h-[3.25rem] shrink-0 items-center gap-2.5 border-b border-zinc-200 ${
+        className={`flex h-[3.25rem] shrink-0 items-center gap-2.5 border-b border-white/10 ${
           collapsed ? "justify-center" : "px-3"
         }`}
       >
-        <div className="grid size-7 shrink-0 place-items-center rounded-md bg-indigo-600 text-[11px] font-bold text-white">
+        <div className="grid size-7 shrink-0 place-items-center rounded-md bg-blue-600 text-[11px] font-bold text-white">
           M
         </div>
         {!collapsed && (
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-zinc-900">
+            <div className="truncate text-sm font-semibold text-white">
               MiniV0
             </div>
-            <div className="truncate text-[11px] text-zinc-400">Workspace</div>
+            <div className="truncate text-[11px] text-blue-300">Workspace</div>
           </div>
         )}
       </div>
@@ -320,11 +320,11 @@ export default function Sidebar() {
 
             {/* Section title — hidden when collapsed; replaced by thin rule */}
             {!collapsed ? (
-              <div className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              <div className="mb-1 px-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {section.label}
               </div>
             ) : (
-              idx > 0 && <div className="mb-2 h-px bg-zinc-100" />
+              idx > 0 && <div className="mb-2 h-px bg-white/10" />
             )}
 
             <ul className="space-y-0.5">

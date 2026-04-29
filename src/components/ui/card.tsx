@@ -17,12 +17,10 @@ export function Card({
   flat = false,
   ...props
 }: CardProps) {
-  const shadow = flat
-    ? "border border-zinc-200 bg-white"
-    : "border border-zinc-200/80 bg-white shadow-sm shadow-zinc-900/[0.04] ring-1 ring-zinc-900/[0.02] transition-[box-shadow,transform] duration-200 hover:shadow-md hover:shadow-zinc-900/[0.06]";
+  const surface = "border border-gray-200 bg-white";
 
   return (
-    <div className={`rounded-xl ${shadow} ${className}`} {...props}>
+    <div className={`rounded-xl ${surface} ${className}`} {...props}>
       {children}
     </div>
   );
@@ -35,7 +33,7 @@ export function CardHeader({
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 border-b border-zinc-100 px-6 py-5 ${className}`}
+      className={`flex items-center justify-between gap-3 border-b border-gray-200 px-5 py-3 ${className}`}
       {...props}
     >
       {children}
@@ -50,7 +48,7 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement> & { children: ReactNode }) {
   return (
     <h2
-      className={`text-sm font-medium tracking-tight text-zinc-900 ${className}`}
+      className={`text-md font-semibold tracking-tight text-gray-900 ${className}`}
       {...props}
     >
       {children}
@@ -64,7 +62,7 @@ export function CardContent({
   ...props
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) {
   return (
-    <div className={`px-6 py-5 ${className}`} {...props}>
+    <div className={`px-5 py-4 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -108,7 +106,7 @@ export function CardMenu({
   return (
     <DropdownMenu align={align}>
       <DropdownMenuTrigger
-        className="flex size-7 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
+        className="flex size-7 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         aria-label="Card options"
       >
         <DotsIcon />
@@ -128,7 +126,7 @@ export function CardFooter({
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) {
   return (
     <div
-      className={`flex items-center justify-end gap-2 border-t border-zinc-100 px-6 py-4 ${className}`}
+      className={`flex items-center justify-end gap-2 border-t border-gray-200 px-5 py-3 ${className}`}
       {...props}
     >
       {children}
@@ -145,7 +143,7 @@ export function CardList({
   ...props
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) {
   return (
-    <div className={`divide-y divide-zinc-100 ${className}`} {...props}>
+    <div className={`divide-y divide-gray-200 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -158,7 +156,7 @@ export function CardListItem({
 }: HTMLAttributes<HTMLDivElement> & { children: ReactNode }) {
   return (
     <div
-      className={`flex items-center justify-between gap-3 px-6 py-3 text-sm text-zinc-700 transition-colors duration-100 hover:bg-zinc-50 ${className}`}
+      className={`flex items-center justify-between gap-3 px-5 py-2.5 text-sm text-gray-900 transition-colors duration-100 hover:bg-gray-50 ${className}`}
       {...props}
     >
       {children}
