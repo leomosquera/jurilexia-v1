@@ -57,8 +57,8 @@ export const navigation: NavSection[] = [
         label: "Expedientes",
         iconId: "file-text",
         children: [
-          { id: "expedientes-lista",  label: "Lista",  href: "/expedientes/demo" },
-          { id: "expedientes-crear",  label: "Crear",  href: "/expedientes/crear" },
+          { id: "expedientes-lista",  label: "Lista",  href: "/expedientes/" },
+          { id: "expedientes-crear",  label: "Crear",  href: "/expedientes/" },
         ],
       },
     ],

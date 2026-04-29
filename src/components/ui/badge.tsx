@@ -1,6 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
-export type BadgeVariant = "success" | "warning" | "danger" | "neutral";
+export type BadgeVariant = "success" | "warning" | "danger" | "neutral" | "info";
 
 export type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
   variant?: BadgeVariant;
@@ -12,6 +12,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   warning: "bg-yellow-100 text-yellow-700",
   danger: "bg-red-100 text-red-700",
   neutral: "bg-gray-100 text-gray-600",
+  info: "bg-blue-100 text-blue-700",
 };
 
 export function Badge({
