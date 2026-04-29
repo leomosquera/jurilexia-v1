@@ -326,125 +326,134 @@ export default function ExpedientesDemoPage() {
       <div className="space-y-6 mx-auto px-6">
 
         {/* ── HEADER ───────────────────────────────────────────────────────── */}
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
 
-          <div className="flex items-start justify-between gap-6">
+        <div className="flex flex-col gap-4">
 
-            {/* LEFT */}
-            <div className="flex items-start gap-4">
+        {/* TOP ROW */}
+        <div className="flex items-start justify-between gap-4">
 
-              {/* ICON */}
-              <div className="flex size-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600 shadow-sm">
-                <Icon.Folder className="size-7" />
-              </div>
+          {/* LEFT */}
+          <div className="flex items-start gap-3 min-w-0 flex-1">
 
-              {/* TEXT */}
-              <div className="space-y-1">
-
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold text-gray-900">
-                    EXP-2024-000123
-                  </h1>
-
-                  <Badge variant="warning">En trámite</Badge>
-                </div>
-
-                <p className="text-md font-bold text-gray-600">
-                  García, Juan Carlos c/ Empresa XYZ S.A. s/ Despido
-                </p>
-
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-400">
-
-                  <div className="flex items-center gap-1.5">
-                    <Icon.Folder className="size-4.5" />
-                    <span>Fuero Civil y Comercial</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <Icon.Folder className="size-4.5" />
-                    <span>Juzgado N° 12</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <Icon.Folder className="size-4.5" />
-                    <span>Carátula: Laboral / Despido</span>
-                  </div>
-
-                  {/* BOTÓN COLLAPSE */}
-                  <button
-                    onClick={() => setShowDetails(!showDetails)}
-                    className="ml-1 flex items-center justify-center size-6 rounded-md border border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
-                  >
-                    <Icon.ChevronDown
-                      className={`size-3 transition-transform ${
-                        showDetails ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-
-                </div>
-
-              </div>
-
+            <div className="flex size-10 lg:size-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 shadow-sm">
+              <Icon.Folder className="size-5 lg:size-7" />
             </div>
 
-            {/* RIGHT */}
-            <div className="flex items-center gap-6">
+            <div className="space-y-1 min-w-0 flex-1">
 
-              {/* Responsable */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">Responsable</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">
+                  EXP-2024-000123
+                </h1>
 
-                <Avatar
-                  name="María López"
-                  size="sm"
-                  className={getAvatarColor("María López")}
-                />
-
-                <span className="text-sm text-gray-700 font-bold">María López</span>
+                <Badge variant="warning">En trámite</Badge>
               </div>
 
-              {/* Equipo */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">Equipo</span>
+              <p className="text-sm lg:text-base font-medium text-gray-600 leading-snug truncate">
+                García, Juan Carlos c/ Empresa XYZ S.A. s/ Despido
+              </p>
 
-                <div className="flex items-center -space-x-2">
-                  {TEAM.map((name) => (
-                    <Avatar
-                      key={name}
-                      name={name}
-                      size="sm"
-                      className={getAvatarColor(name)}
-                    />
-                  ))}
+            </div>
+          </div>
 
-                  {/* ADD USER */}
-                  <button className="flex size-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition">
-                    <PlusSmIcon />
-                  </button>
-                </div>
+          {/* ACTIONS (SIEMPRE ARRIBA) */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Button variant="secondary" size="md" className="whitespace-nowrap">
+              Editar
+            </Button>
+
+            <Button variant="primary" size="md" className="whitespace-nowrap">
+              <span className="hidden sm:inline">Cambiar estado</span>
+              <span className="sm:hidden">Estado</span>
+            </Button>
+          </div>
+
+        </div>
+
+        {/* SECOND ROW (META + USERS) */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+
+          {/* META */}
+          <div className="flex flex-wrap items-center gap-3 text-xs lg:text-sm text-gray-400">
+
+            <div className="flex items-center gap-1.5">
+              <Icon.Folder className="size-4" />
+              <span>Fuero Civil y Comercial</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Icon.Folder className="size-4" />
+              <span>Juzgado N° 12</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Icon.Folder className="size-4" />
+              <span>Carátula: Laboral / Despido</span>
+            </div>
+
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="flex items-center justify-center size-6 rounded-md border border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            >
+              <Icon.ChevronDown
+                className={`size-3 transition-transform ${
+                  showDetails ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* USERS */}
+          <div className="flex flex-wrap items-center gap-4">
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 hidden sm:inline">
+                Responsable
+              </span>
+
+              <Avatar
+                name="María López"
+                size="sm"
+                className={getAvatarColor("María López")}
+              />
+
+              <span className="text-sm text-gray-700 font-medium">
+                María López
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 hidden sm:inline">
+                Equipo
+              </span>
+
+              <div className="flex items-center -space-x-2">
+                {TEAM.map((name) => (
+                  <Avatar
+                    key={name}
+                    name={name}
+                    size="sm"
+                    className={getAvatarColor(name)}
+                  />
+                ))}
+
+                <button className="flex size-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition">
+                  <PlusSmIcon />
+                </button>
               </div>
+            </div>
 
-              {/* Última actividad */}
-              <div className="flex items-center gap-1 text-xs text-gray-400">
-                <ClockIcon />
-                <span>Hace 2 horas</span>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                <Button variant="secondary" size="md">
-                  Editar
-                </Button>
-                <Button variant="primary" size="md">
-                  Cambiar estado
-                </Button>
-              </div>
-
+            <div className="flex items-center gap-1 text-xs text-gray-400">
+              <ClockIcon />
+              <span className="hidden sm:inline">Hace 2 horas</span>
             </div>
 
           </div>
 
+        </div>
+
+        </div>
         </div>
 
         {showDetails && (
@@ -606,9 +615,12 @@ export default function ExpedientesDemoPage() {
 
               {/* ITEM */}
               <div className="space-y-2 px-4 first:pl-0 last:pr-0 xl:border-r xl:border-gray-200">
-                <p className="text-xs font-semibold uppercase">Próxima acción</p>
+                <div className="flex items-center gap-1.5">
+                  <Icon.Folder className="size-4.5" />
+                  <span>Próxima acción</span>
+                </div>
 
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-md font-semibold text-gray-900">
                   Presentar demanda
                 </p>
 
@@ -623,7 +635,10 @@ export default function ExpedientesDemoPage() {
               </div>
 
               <div className="space-y-2 px-4 first:pl-0 last:pr-0 xl:border-r xl:border-gray-200">
-                <p className="text-xs text-gray-400">Alertas</p>
+                <div className="flex items-center gap-1.5">
+                  <Icon.Folder className="size-4.5" />
+                  <span>Alertas</span>
+                </div>
 
                 <div className="space-y-1 text-xs text-gray-600">
 
@@ -646,7 +661,10 @@ export default function ExpedientesDemoPage() {
               </div>
 
               <div className="space-y-2 px-4 first:pl-0 last:pr-0 xl:border-r xl:border-gray-200">
-                <p className="text-xs text-gray-400">Estado del expediente</p>
+                <div className="flex items-center gap-1.5">
+                  <Icon.Folder className="size-4.5" />
+                  <span>Estado del expediente</span>
+                </div>
 
                 <p className="text-sm font-semibold text-green-600">
                   En trámite
@@ -658,7 +676,10 @@ export default function ExpedientesDemoPage() {
               </div>
 
               <div className="space-y-2 px-4 first:pl-0 last:pr-0">
-                <p className="text-xs text-gray-400">Último movimiento</p>
+                <div className="flex items-center gap-1.5">
+                  <Icon.Folder className="size-4.5" />
+                  <span>Último movimiento</span>
+                </div>
 
                 <p className="text-sm font-semibold text-gray-900">
                   Actuación PJN
