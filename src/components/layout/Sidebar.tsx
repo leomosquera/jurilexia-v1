@@ -301,14 +301,14 @@ export default function Sidebar() {
         }`}
       >
         <div className="grid size-7 shrink-0 place-items-center rounded-md bg-blue-600 text-[11px] font-bold text-white">
-          M
+          JV1
         </div>
         {!collapsed && (
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-white">
-              MiniV0
+              JuriLexIA
             </div>
-            <div className="truncate text-[11px] text-blue-300">Workspace</div>
+            <div className="truncate text-[11px] text-blue-300">versión 1.0.0</div>
           </div>
         )}
       </div>
