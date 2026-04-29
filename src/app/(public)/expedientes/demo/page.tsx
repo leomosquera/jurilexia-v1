@@ -245,26 +245,27 @@ const TIMELINE_STEPS: Array<{
   status: "done" | "current" | "pending";
   date?: string;
 }> = [
-  { label: "Inicio",      status: "done",    date: "01/03" },
-  { label: "Preparación", status: "done",    date: "15/03" },
-  { label: "Presentado",  status: "done",    date: "01/04" },
-  { label: "En trámite",  status: "current"              },
-  { label: "Audiencia",   status: "pending"              },
-  { label: "Resolución",  status: "pending"              },
-  { label: "Finalizado",  status: "pending"              },
+  { label: "Inicio", status: "done", date: "12/03/2025" },
+  { label: "Reclamo administrativo", status: "done", date: "18/03/2025" },
+  { label: "En análisis ANSES",  status: "done", date: "25/03/2025" },
+  { label: "Observado",  status: "current", date: "08/04/2025" },
+  { label: "Respuesta a observación", status: "pending" },
+  { label: "Resolución",  status: "pending" },
+  { label: "Finalizado",  status: "pending" },
 ];
 
 const TASKS: Array<{
   id: string; name: string; assigned: string;
   date: string; priority: TaskPriority; status: TaskStatus;
 }> = [
-  { id: "t1", name: "Presentar escrito de responde",    assigned: "María López",  date: "15 may", priority: "Alta",  status: "Pendiente"    },
-  { id: "t2", name: "Revisar documentación adjunta",    assigned: "Ana García",   date: "18 may", priority: "Media", status: "En progreso"  },
-  { id: "t3", name: "Coordinar audiencia con cliente",  assigned: "Carlos Ruiz",  date: "20 may", priority: "Baja",  status: "Programada"   },
-  { id: "t4", name: "Notificar resolución provisional", assigned: "Laura Medina", date: "22 may", priority: "Alta",  status: "Pendiente"    },
-  { id: "t5", name: "Revisar documentación adjunta",    assigned: "Ana García",   date: "18 may", priority: "Media", status: "En progreso"  },
-  { id: "t6", name: "Coordinar audiencia con cliente",  assigned: "Carlos Ruiz",  date: "20 may", priority: "Baja",  status: "Programada"   },
-  { id: "t7", name: "Notificar resolución provisional", assigned: "Laura Medina", date: "22 may", priority: "Alta",  status: "Pendiente"    },
+  { id: "t1", name: "Responder observación ANSES",    assigned: "María López",  date: "15 may", priority: "Alta",  status: "Pendiente"    },
+  { id: "t2", name: "Revisar historia laboral actualizada",    assigned: "Ana García",   date: "18 may", priority: "Media", status: "En progreso"  },
+  { id: "t3", name: "Solicitar recibos de haberes",  assigned: "Carlos Ruiz",  date: "20 may", priority: "Media",  status: "Pendiente"   },
+  { id: "t4", name: "Calculadora de movilidad", assigned: "Laura Medina", date: "22 may", priority: "Baja",  status: "Pendiente"    },
+  { id: "t5", name: "Control de topes y mínimos",    assigned: "Ana García",   date: "18 may", priority: "Baja", status: "Pendiente"   },
+  { id: "t6", name: "Redactar presentación complementaria",  assigned: "Carlos Ruiz",  date: "20 may", priority: "Alta",  status: "Pendiente"   },
+  { id: "t7", name: "Subir documentación a mi ANSES", assigned: "Laura Medina", date: "22 may", priority: "Media",  status: "Pendiente"    },
+  { id: "t8", name: "Seguimiento de trámite", assigned: "Laura Medina", date: "22 may", priority: "Baja",  status: "Pendiente"    },
 ];
 
 const DOCS: Array<{
@@ -281,10 +282,10 @@ const ACTUACIONES: Array<{
   id: string; day: string; month: string; title: string; desc: string;
   variant: BadgeVariant; badge: string; type: "document" | "briefcase" | "scales";
 }> = [
-  { id: "a1", day: "02", month: "MAY", title: "Notificación de apertura",    desc: "El juzgado notificó la apertura formal del expediente.",     variant: "success", badge: "Procesada",   type: "document"   },
-  { id: "a2", day: "15", month: "ABR", title: "Presentación de pruebas",     desc: "Se adjuntaron los documentos requeridos por el tribunal.",   variant: "neutral", badge: "Informativa", type: "briefcase"  },
-  { id: "a3", day: "10", month: "ABR", title: "Ingreso del escrito inicial",  desc: "Presentación formal ante mesa de entradas.",                 variant: "success", badge: "Procesada",   type: "document"   },
-  { id: "a4", day: "20", month: "MAY", title: "Audiencia preliminar",         desc: "Citación a audiencia con ambas partes convocadas.",          variant: "warning", badge: "Pendiente",   type: "scales"     },
+  { id: "a1", day: "08", month: "ABR", title: "Observación de ANSES",    desc: "Se recibió observación sobre documentación presentada.",     variant: "success", badge: "Procesada",   type: "document"   },
+  { id: "a2", day: "02", month: "ABR", title: "Presentación incial",     desc: "Se presentó reclamo por diferencia de haberes.",   variant: "neutral", badge: "Informativa", type: "briefcase"  },
+  { id: "a3", day: "01", month: "ABR", title: "Carga de documentación",  desc: "Se adjuntó documentación requerida.",                 variant: "success", badge: "Procesada",   type: "document"   },
+  { id: "a4", day: "25", month: "MAR", title: "Pase a análisis",         desc: "El expediente fue derivado para nálisis técnico.",          variant: "warning", badge: "Pendiente",   type: "scales"     },
 ];
 
 const grouped = {
@@ -344,14 +345,14 @@ export default function ExpedientesDemoPage() {
 
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-lg lg:text-2xl font-semibold text-gray-900 truncate">
-                  EXP-2024-000123
+                  EXP-2025-000123
                 </h1>
 
-                <Badge variant="warning">En trámite</Badge>
+                <Badge variant="success">En trámite</Badge>
               </div>
 
               <p className="text-sm lg:text-base font-medium text-gray-600 leading-snug truncate">
-                García, Juan Carlos c/ Empresa XYZ S.A. s/ Despido
+                Pérez, Marta Alicia / Reajuste de haberes
               </p>
 
             </div>
@@ -379,17 +380,22 @@ export default function ExpedientesDemoPage() {
 
             <div className="flex items-center gap-1.5">
               <Icon.Folder className="size-4" />
-              <span>Fuero Civil y Comercial</span>
+              <span>Fuero: Seguridad Social</span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <Icon.Folder className="size-4" />
-              <span>Juzgado N° 12</span>
+              <span>Objeto: Reajuste de haberes</span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <Icon.Folder className="size-4" />
-              <span>Carátula: Laboral / Despido</span>
+              <span>Tipo: Administrativo</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Icon.Folder className="size-4" />
+              <span>Origen: ANSES</span>
             </div>
 
             <button
@@ -460,7 +466,7 @@ export default function ExpedientesDemoPage() {
         <div className="mt-2">
           <Card>
             <CardContent className="p-5">
-              <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-sm">
 
                 {/* COLUMNA 1 */}
                 <div className="space-y-2">
@@ -468,9 +474,9 @@ export default function ExpedientesDemoPage() {
                     Información del caso
                   </p>
 
-                  <InfoRow label="Tipo de proceso" value="Ordinario Laboral" />
-                  <InfoRow label="Número de caso" value="CAS-2024-000045" />
-                  <InfoRow label="Fecha de inicio" value="18/05/2024" />
+                  <InfoRow label="Cliente" value="Pérez, Marta Alicia" />
+                  <InfoRow label="Número de caso" value="CAS-2025-000087" />
+                  <InfoRow label="Fecha de inicio" value="12/03/2025" />
                   <InfoRow label="Estado" value="En trámite" />
                   <InfoRow label="Prioridad" value={<Badge variant="danger">Alta</Badge>} />
                 </div>
@@ -481,10 +487,11 @@ export default function ExpedientesDemoPage() {
                     Información del expediente
                   </p>
 
-                  <InfoRow label="Número" value="EXP-2024-000123" />
-                  <InfoRow label="Carátula" value="18/05/2024" />
-                  <InfoRow label="Origen" value="PJN" />
-                  <InfoRow label="Instancia" value="Primera" />
+                  <InfoRow label="Número" value="024-25-05678932-1" />
+                  <InfoRow label="Organismo" value="ANSES" />
+                  <InfoRow label="Trámite" value="Reajuste de haberes" />
+                  <InfoRow label="Fecha de inicio" value="12/03/2025" />
+                  <InfoRow label="Instancia" value="Administrativa" />
                 </div>
 
                 {/* COLUMNA 3 */}
@@ -493,38 +500,29 @@ export default function ExpedientesDemoPage() {
                     Cliente
                   </p>
 
-                  <InfoRow label="Nombre" value="García, Juan Carlos" />
-                  <InfoRow label="DNI" value="20.123.456" />
-                  <InfoRow label="Teléfono" value="+54 11 1234-5678" />
-                  <InfoRow label="Email" value="juan@mail.com" />
+                  <InfoRow label="Nombre" value="Pérez, Marta Alicia" />
+                  <InfoRow label="DNI" value="14.287.654" />
+                  <InfoRow label="Teléfono" value="+54 11 4444-5555" />
+                  <InfoRow label="Email" value="marta.perez@email.com" />
+                  <InfoRow label="Domicilio" value="Av. Rivadavia 1234, CABA" />
                 </div>
 
                 {/* COLUMNA 4 */}
                 <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase">
-                    Jurisdicción
-                  </p>
-
-                  <InfoRow label="Fuero" value="Laboral" />
-                  <InfoRow label="Juzgado" value="N° 12" />
-                  <InfoRow label="Secretaría" value="Única" />
-                </div>
-
-                {/* COLUMNA 5 */}
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold uppercase">
                     Datos adicionales
                   </p>
 
-                  <InfoRow label="Moneda" value="ARS" />
-                  <InfoRow label="Valor" value="$ 5.000.000" />
+                  <InfoRow label="Motivo" value="Diferencias por movilidad" />
+                  <InfoRow label="Período reclamado" value="03/2021 - 02/2025" />
+                  <InfoRow label="Monto estimado" value="$ 3.245.876,40" />
                   <InfoRow
                     label="Etiquetas"
                     value={
                       <div className="flex gap-1">
-                        <Badge variant="neutral">Despido</Badge>
-                        <Badge variant="neutral">Indemnización</Badge>
-                        <Badge variant="danger">Prioridad alta</Badge>
+                        <Badge variant="neutral">Movilidad</Badge>
+                        <Badge variant="neutral">Haberes</Badge>
+                        <Badge variant="neutral">Diferencias</Badge>
                       </div>
                     }
                   />
@@ -621,11 +619,11 @@ export default function ExpedientesDemoPage() {
                 </div>
 
                 <p className="text-md font-semibold text-gray-900">
-                  Presentar demanda
+                  Responder observación ANSES
                 </p>
 
                 <p className="text-xs text-gray-500">
-                  Vence hoy · Asignado a Juan Pérez
+                  Vence el <span className="text-gray-800">22/04/2025</span>
                 </p>
 
                 <div className="flex gap-2 pt-1">
@@ -644,17 +642,22 @@ export default function ExpedientesDemoPage() {
 
                   <div className="flex items-center gap-2">
                     <span className="size-1.5 rounded-full bg-red-500" />
-                    2 tareas vencidas
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-amber-400" />
-                    Sin movimiento hace 5 días
+                    1 tarea vencida
                   </div>
 
                   <div className="flex items-center gap-2">
                     <span className="size-1.5 rounded-full bg-orange-400" />
-                    Falta documentación clave
+                    2 tareas próximas a vencer
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="size-1.5 rounded-full bg-orange-400" />
+                     Respuesta a observación ANSES
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="size-1.5 rounded-full bg-gray-400" />
+                     Sin movimiento hace 3 días
                   </div>
 
                 </div>
@@ -670,7 +673,7 @@ export default function ExpedientesDemoPage() {
                   En trámite
                 </p>
 
-                <p className="text-xs text-gray-400">Etapa 3 de 7</p>
+                <p className="text-xs text-gray-400">Etapa 4 de 7</p>
 
                 <ProgressBar value={43} />
               </div>
@@ -682,15 +685,15 @@ export default function ExpedientesDemoPage() {
                 </div>
 
                 <p className="text-sm font-semibold text-gray-900">
-                  Actuación PJN
+                  Observación de ANSES
                 </p>
 
                 <p className="text-xs text-gray-400">
-                  Hace 2 días (15/05/2024)
+                  Hace 2 días (08/04/2025)
                 </p>
 
                 <p className="text-xs text-gray-500 italic">
-                  "Se corre traslado de la demanda..."
+                  "Se recibió observación sobre documentación presentada ..."
                 </p>
 
                 <div className="pt-1">
@@ -903,7 +906,7 @@ export default function ExpedientesDemoPage() {
                         <p className="mt-1 text-sm text-gray-600">{act.desc}</p>
 
                         <p className="mt-1 text-xs text-gray-400">
-                          PJN · Juzgado Nacional
+                          ANSES
                         </p>
                       </div>
                     </div>
@@ -953,7 +956,7 @@ export default function ExpedientesDemoPage() {
                         <p className="mt-1 text-sm text-gray-600">{act.desc}</p>
 
                         <p className="mt-1 text-xs text-gray-400">
-                          PJN · Juzgado Nacional
+                          ANSES
                         </p>
                       </div>
                     </div>
@@ -999,7 +1002,7 @@ export default function ExpedientesDemoPage() {
                         <p className="mt-1 text-sm text-gray-600">{act.desc}</p>
 
                         <p className="mt-1 text-xs text-gray-400">
-                          PJN · Mesa de entradas
+                          ANSES
                         </p>
                       </div>
                     </div>
