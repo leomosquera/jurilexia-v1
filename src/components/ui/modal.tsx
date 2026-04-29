@@ -60,7 +60,7 @@ export function Modal({
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Mount → animate in; close → animate out → unmount
   useEffect(() => {
