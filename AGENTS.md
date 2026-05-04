@@ -229,3 +229,64 @@ Next step:
 - Toast notifications should reuse the existing toast system already implemented in the project.
 
 - Reuse existing patterns before creating new implementations.
+
+# Form & Validation Rules
+
+- Form validation must use:
+  - zod
+  - react-hook-form
+  - @hookform/resolvers
+
+- Validation schemas must live in:
+  lib/validation/schemas
+
+- Shared validation utilities must live in:
+  lib/validation/common
+
+- Business validation logic must NOT live inside UI components.
+
+- Forms must reuse validation schemas whenever possible.
+
+- Use helper text below inputs for guidance.
+- Use error messages below inputs for validation feedback.
+- Avoid tooltip-based validation UX.
+
+- Normalize values before persistence.
+- Format values only for visual display.
+
+- Prefer:
+  - onBlur validation
+  - compact error messages
+  - reusable schemas
+
+  # Form UX Standards
+
+- Forms must use:
+  - react-hook-form
+  - zod
+  - zodResolver
+
+- Validation mode:
+  - onBlur
+
+- Validation feedback:
+  - red border
+  - error message below field
+  - helper text below field
+
+- Do NOT use:
+  - tooltip validation
+  - inline alerts above form
+  - onChange validation by default
+
+- Use:
+  - preprocess for normalization
+  - parsers before persistence
+  - formatters only for display
+
+- Optional empty fields should become undefined before validation.
+
+- Forms should:
+  - reuse schemas
+  - infer types from zod
+  - use reset() for edit mode

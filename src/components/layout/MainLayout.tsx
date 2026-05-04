@@ -8,7 +8,7 @@ import Sidebar from "@/components/layout/MainSidebar";
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-zinc-50 text-zinc-900 antialiased">
+      <div className="flex min-h-screen text-zinc-900 antialiased">
         <Sidebar />
 
         <div className="flex min-w-0 flex-1 flex-col">
