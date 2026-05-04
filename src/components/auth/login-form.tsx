@@ -2,47 +2,68 @@
 
 import { useActionState } from "react"
 import { loginAction } from "@/app/(auth)/login/actions"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { ErrorMessage } from "@/components/ui/form-field"
 
 const initialState = { error: "" }
 
 export function LoginForm() {
-  const [state, formAction] = useActionState(
+  const [state, formAction, isPending] = useActionState(
     loginAction as any,
     initialState
   )
 
   return (
     <form action={formAction} className="space-y-4">
-      <div>
-        <label>Email</label>
-        <input
-          name="email"
-          type="email"
-          required
-          className="w-full border rounded px-3 py-2"
-        />
-      </div>
+      <Input
+        name="email"
+        type="email"
+        label="Email"
+        placeholder="tu@empresa.com"
+        autoFocus
+        required
+        autoComplete="email"
+        state={state?.error ? "error" : "default"}
+      />
 
-      <div>
-        <label>Contraseña</label>
-        <input
-          name="password"
-          type="password"
-          required
-          className="w-full border rounded px-3 py-2"
-        />
-      </div>
+      <Input
+        name="password"
+        type="password"
+        label="Contraseña"
+        placeholder="••••••••"
+        required
+        autoComplete="current-password"
+        state={state?.error ? "error" : "default"}
+      />
 
       {state?.error && (
-        <p className="text-red-500 text-sm">{state.error}</p>
+        <ErrorMessage>{state.error}</ErrorMessage>
       )}
 
-      <button
+      <Button
         type="submit"
-        className="w-full border rounded px-4 py-2 text-sm"
+        size="lg"
+        loading={isPending}
+        className="mt-1 w-full"
       >
         Ingresar
-      </button>
+      </Button>
+
+      <div className="flex items-center justify-between pt-1">
+        <button
+          type="button"
+          className="text-xs text-zinc-400 transition-colors duration-100 hover:text-zinc-600"
+        >
+          ¿Olvidaste tu contraseña?
+        </button>
+        <button
+          type="button"
+          className="text-xs text-zinc-400 transition-colors duration-100 hover:text-zinc-600"
+        >
+          Necesitás ayuda?
+        </button>
+      </div>
     </form>
   )
 }

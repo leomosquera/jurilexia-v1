@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
-import Header from "@/components/layout/Header";
-import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/MainHeader";
+import Sidebar from "@/components/layout/MainSidebar";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (

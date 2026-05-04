@@ -44,6 +44,15 @@ export const navigation: NavSection[] = [
         ],
       },
       {
+        id: "personas",
+        label: "Personas",
+        iconId: "users",
+        children: [
+          { id: "personas-lista",  label: "Lista",  href: "/personas" },
+          { id: "personas-crear",  label: "Crear",  href: "/personas/crear" },
+        ],
+      },
+      {
         id: "casos",
         label: "Casos",
         iconId: "briefcase",

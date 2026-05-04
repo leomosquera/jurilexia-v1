@@ -36,7 +36,7 @@ export default async function TenantsPage({ searchParams }: Props) {
             { label: "Tenants" },
           ]}
           actions={
-            <Link href="/tenants/create">
+            <Link href="/tenants/crear">
               <Button size="sm">Nuevo</Button>
             </Link>
           }

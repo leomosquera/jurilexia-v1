@@ -191,3 +191,41 @@ Next step:
 
 - Auth helpers live in:
   lib/auth/
+
+# CRUD UX Conventions
+
+- CRUD routes must use Spanish paths:
+  - `/crear`
+  - `/[id]`
+
+- Resource detail and edit pages should share the same dynamic route:
+  - Example:
+    - `/personas/[id]`
+    - `/clientes/[id]`
+    - `/tenants/[id]`
+
+- Do NOT use:
+  - `/new`
+  - `/edit`
+  - `/editar/[id]`
+
+- Forms should be reusable whenever possible:
+  - Example:
+    - PersonaForm
+    - TenantForm
+
+- Table actions should follow the existing Tenant module UX pattern:
+  - edit icon
+  - delete icon
+  - right aligned actions column
+  - compact actions
+
+- Delete actions must:
+  1. open confirmation modal
+  2. execute delete through API
+  3. show toast feedback
+  4. refresh/update listing
+
+- Toast notifications should reuse the existing toast system already implemented in the project.
+
+- Reuse existing patterns before creating new implementations.

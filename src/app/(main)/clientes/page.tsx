@@ -25,7 +25,7 @@ export default async function ClientesPage() {
       <PageHeader
         title="Clientes"
         actions={
-          <Link href="/clientes/create">
+          <Link href="/clientes/crear">
             <Button size="sm">Nuevo</Button>
           </Link>
         }
