@@ -136,7 +136,7 @@ type ProjectRow = {
 const PROJECTS: ProjectRow[] = [
   { id: "1", name: "Redesign homepage",    owner: "Alice Martin", due: "Apr 30", status: "active"  },
   { id: "2", name: "API v2 migration",     owner: "Bob Chen",     due: "May 15", status: "review"  },
-  { id: "3", name: "Analytics dashboard",  owner: "Carol James",  due: "Mar 20", status: "done"    },
+  { id: "3", name: "Analytics ",  owner: "Carol James",  due: "Mar 20", status: "done"    },
   { id: "4", name: "Auth refactor",        owner: "David Park",   due: "Jun 1",  status: "blocked" },
 ];
 

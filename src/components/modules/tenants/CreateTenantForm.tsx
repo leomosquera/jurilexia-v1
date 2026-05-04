@@ -32,7 +32,7 @@ export function CreateTenantForm() {
 
       toast.success("Tenant creado");
 
-      router.push("/dashboard/tenants?success=create");
+      router.push("/tenants?success=create");
 
     } catch (err: any) {
       toast.error(err.message ?? "Error al crear");

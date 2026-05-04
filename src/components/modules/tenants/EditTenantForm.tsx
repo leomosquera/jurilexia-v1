@@ -42,7 +42,7 @@ export function EditTenantForm({
       });
 
       // redirección igual que antes
-      window.location.href = "/dashboard/tenants?success=update";
+      window.location.href = "/tenants?success=update";
 
     } catch (err: any) {
       setError(err.message ?? "Error al guardar");

@@ -32,11 +32,11 @@ export default async function TenantsPage({ searchParams }: Props) {
         <PageHeader
           title="Tenants"
           breadcrumb={[
-            { label: "Dashboard", href: "/dashboard" },
+            { label: "Inicio", href: "/" },
             { label: "Tenants" },
           ]}
           actions={
-            <Link href="/dashboard/tenants/create">
+            <Link href="/tenants/create">
               <Button size="sm">Nuevo</Button>
             </Link>
           }

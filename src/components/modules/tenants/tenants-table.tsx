@@ -39,7 +39,7 @@ export function TenantsTable({ tenants }: Props) {
 
         setPendingId(null);
 
-        router.replace("/dashboard/tenants?success=delete");
+        router.replace("/tenants?success=delete");
 
       } catch (err: any) {
         toast.error(err.message ?? "Error al eliminar");
@@ -63,7 +63,7 @@ export function TenantsTable({ tenants }: Props) {
               <TableCell align="right">
                 <div className="flex items-center justify-end gap-0.5">
                   <Link
-                    href={`/dashboard/tenants/${tenant.id}`}
+                    href={`/tenants/${tenant.id}`}
                     aria-label="Editar"
                     className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-700"
                   >

@@ -1,6 +1,6 @@
 import { requireAuth } from "@/lib/auth/require-auth";
 
-export default async function DashboardPage() {
+export default async function MainPage() {
   const ctx = await requireAuth();
 
   const { user, usuario, tenant_id, roles } = ctx;
