@@ -1,292 +1,257 @@
-# Project Context
+# JurilexIA — AI Execution Rules
 
-SaaS dashboard built with:
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- Supabase (Auth + Database)
+# Read First
 
-Multi-tenant architecture:
-- auth handled by Supabase
-- app data stored in PostgreSQL (Supabase)
-- authorization handled in app DB (roles/permissions)
+Before implementing anything:
 
-# Design System
+1. Read:
+   - docs/architecture/jurilexia-architecture-v1.md
+   - AGENTS.md
 
-- Minimal and clean (Notion / GitHub style)
-- Compact spacing (data-dense)
-- Bordered cards (no shadows)
-- Neutral colors + single primary accent
-- Consistent typography and spacing
+2. Respect the existing architecture strictly.
 
-# UI Rules (STRICT)
+3. Prefer consistency over creativity.
 
-- All UI must be reusable components
-- Components live in /components/ui
-- Layout components in /components/layout
+---
 
-🚨 CRITICAL:
-- NEVER modify UI Kit components unless explicitly requested
-- NEVER create new UI components without asking first
-- Pages must ONLY compose existing components
-- If a UI element is missing → ASK before creating it
+# Execution Rules
 
-# Architecture Rules
+- Implement ONLY the requested scope
+- Do NOT continue with additional steps automatically
+- Stop after each implementation step for review
+- Ask before making architectural decisions
+- Ask before introducing new patterns
+- Ask before creating parallel systems
 
-- Supabase handles authentication.
-- Application data comes from internal tables such as usuario, tenant, cliente, persona, etc.
-- Do NOT mix auth logic with business logic.
-
-- Business data access must follow this flow:
-  UI → lib/api → app/api → lib/server/services → lib/server/repositories → Supabase
-
-- Server-side business logic must live in:
-  - lib/server/services
-  - lib/server/repositories
-  - lib/server/context
-  - lib/server/validators
-  - lib/server/errors
-
-- UI must NEVER contain Supabase business queries.
-- Client components may call lib/api helpers only.
-
-# CRUD Rules
-
-- CRUD must be implemented through internal API routes.
-- Client-side UI must call helper functions from lib/api.
-- app/api route handlers must be thin controllers only.
-- Business rules must live in lib/server/services.
-- Supabase table access must live in lib/server/repositories.
-
-- DO NOT:
-  - use Server Actions for business CRUD
-  - query business tables directly from client components
-  - put Supabase .from(...) calls in pages or UI components
-  - duplicate DB logic between API routes and pages
-
-- Server Components may call services directly for SSR reads when appropriate.
-- Client Components must use lib/api.
-
-# Auth & Session Rules
-
-- Use Supabase session as single source of truth
-- Do NOT create custom session systems
-
-- App user must be resolved from:
-  auth.users → usuario (auth_user_id)
-
-- Tenant context must come from:
-  usuario_tenant
-
-# Multi-Tenant Rules
-
-- Always assume user can belong to multiple tenants
-- Do NOT hardcode tenant logic
-- Tenant context must be explicit and controlled
-
-# Layout & Navigation Rules
-
-- Sidebar must support:
-  - grouped sections (with titles)
-  - items with icons and labels
-  - nested submenus
-
-- Each role may have a different sidebar
-- Navigation must respect permissions (later stage)
-
-- Text labels must always be left-aligned
-- Icons and labels must be grouped together
-- Action icons aligned right
-
-# Scope Control (VERY IMPORTANT)
-
-- Only implement what is explicitly requested
-- Do NOT anticipate future features
-- Do NOT add extra fields, logic, or UI
-
-- If something is unclear → ASK
-- If something is missing → ASK
-- If a decision affects architecture → ASK
-
-# Development Approach
-
-- Work step by step
-- Small and controlled changes
-- Prioritize clarity over completeness
-- Avoid generating large code blocks
-
-# Current Phase
-
-Implemented:
-1. Supabase Auth login
-2. Session context using:
-   auth.users → usuario → usuario_tenant → tenant
-   auth.users → usuario → usuario_rol → rol
-3. Protected dashboard routes
-4. RLS basic policies for usuario, usuario_tenant, usuario_rol, rol, tenant, cliente and persona
-5. Tenant CRUD migrated to API/service/repository architecture
-6. Initial cliente listing started
-
-Current focus:
-- Cliente module
-- Build it step by step using the same architecture:
-  UI → lib/api → app/api → service → repository → Supabase
-
-Next step:
-- Replace the temporary create-cliente button with a proper CreateClienteForm.
+---
 
 # UI Kit Protection
 
-- The existing UI Kit is the visual source of truth
-- Do NOT refactor, replace, restyle or restructure UI Kit components unless explicitly requested
-- Do NOT change spacing, sizing, variants, naming or internal behavior of existing UI Kit components
-- If a page needs UI that is not covered by the current UI Kit, ASK before creating or modifying components
+The existing UI Kit is the visual source of truth.
 
-# Auth / Access Control Boundaries
+DO NOT:
 
-- Authentication and session resolution must be implemented first
-- Do NOT start role-based navigation, sidebar switching, permission guards or CRUD pages until session context is resolved correctly
-- Protected routes must depend on authenticated session first, and role/tenant logic only after session context is available
+- refactor UI Kit components
+- restyle existing primitives
+- change spacing systems
+- change variants
+- change naming conventions
+- modify internal behavior
 
-# Data Access Rules
+Unless explicitly requested.
 
-- Supabase queries for business tables must live in lib/server/repositories.
-- Services orchestrate business rules and call repositories.
-- API routes call services.
-- Client components call lib/api helpers.
-- Pages should compose components and may call services only if they are Server Components.
+If a required UI pattern does not exist:
+- ASK before creating it
 
-- Authentication may use Supabase Auth directly through lib/supabase/server or lib/supabase/client.
-- Business data must not be queried directly from client components.
+---
 
-# Prompt Execution Rules
+# File & Folder Discipline
 
-- For each task, implement only the requested step
-- Do NOT continue with the next step automatically
-- After implementing a step, stop and wait for review
+Respect the existing project structure.
 
-# File / Folder Discipline
+DO NOT:
 
-- Respect the existing project structure.
-- Do NOT move files unless explicitly requested.
-- Do NOT rename files, folders, routes, or imports unless explicitly requested.
+- move files
+- rename folders
+- rename routes
+- reorganize architecture
+- introduce new root-level patterns
 
-- Domain UI components live in:
-  components/modules/<domain>/
+Unless explicitly requested.
 
-- Generic reusable UI components live in:
-  components/ui/
+---
 
-- Layout components live in:
-  components/layout/
+# Component Placement Rules
 
-- Frontend API helpers live in:
-  lib/api/
+## Generic reusable UI
 
-- Server business logic lives in:
-  lib/server/
+Must live in:
 
-- Supabase clients live in:
-  lib/supabase/
+```txt
+components/ui/
+```
 
-- Auth helpers live in:
-  lib/auth/
+Examples:
 
-# CRUD UX Conventions
+- buttons
+- cards
+- overlays
+- modals
+- side-panels
+- tables
+- form controls
 
-- CRUD routes must use Spanish paths:
-  - `/crear`
-  - `/[id]`
+---
 
-- Resource detail and edit pages should share the same dynamic route:
-  - Example:
-    - `/personas/[id]`
-    - `/clientes/[id]`
-    - `/tenants/[id]`
+## Layout components
 
-- Do NOT use:
-  - `/new`
-  - `/edit`
-  - `/editar/[id]`
+Must live in:
 
-- Forms should be reusable whenever possible:
-  - Example:
-    - PersonaForm
-    - TenantForm
+```txt
+components/layout/
+```
 
-- Table actions should follow the existing Tenant module UX pattern:
-  - edit icon
-  - delete icon
-  - right aligned actions column
-  - compact actions
+Examples:
 
-- Delete actions must:
-  1. open confirmation modal
-  2. execute delete through API
-  3. show toast feedback
-  4. refresh/update listing
+- sidebar
+- header
+- layout containers
+- navigation
 
-- Toast notifications should reuse the existing toast system already implemented in the project.
+---
 
-- Reuse existing patterns before creating new implementations.
+## Business/domain components
 
-# Form & Validation Rules
+Must live in:
 
-- Form validation must use:
-  - zod
-  - react-hook-form
-  - @hookform/resolvers
+```txt
+components/modules/<domain>/
+```
 
-- Validation schemas must live in:
-  lib/validation/schemas
+Examples:
 
-- Shared validation utilities must live in:
-  lib/validation/common
+```txt
+components/modules/personas/
+components/modules/clientes/
+components/modules/expedientes/
+```
 
-- Business validation logic must NOT live inside UI components.
+---
 
-- Forms must reuse validation schemas whenever possible.
+# Data Flow Rules
 
-- Use helper text below inputs for guidance.
-- Use error messages below inputs for validation feedback.
-- Avoid tooltip-based validation UX.
+Business data MUST follow:
 
-- Normalize values before persistence.
-- Format values only for visual display.
+```txt
+UI
+→ lib/api
+→ app/api
+→ services
+→ repositories
+→ Supabase
+```
 
-- Prefer:
-  - onBlur validation
-  - compact error messages
-  - reusable schemas
+---
 
-  # Form UX Standards
+# Forbidden Patterns
 
-- Forms must use:
-  - react-hook-form
-  - zod
-  - zodResolver
+DO NOT:
 
-- Validation mode:
-  - onBlur
+- query business tables directly from UI
+- place Supabase queries inside components
+- duplicate repository logic
+- place business logic inside pages
+- use Server Actions for business CRUDs
+- mix auth logic with business logic
 
-- Validation feedback:
-  - red border
-  - error message below field
-  - helper text below field
+---
 
-- Do NOT use:
-  - tooltip validation
-  - inline alerts above form
-  - onChange validation by default
+# API Rules
 
-- Use:
-  - preprocess for normalization
-  - parsers before persistence
-  - formatters only for display
+- API routes must remain thin controllers
+- Business logic belongs to services
+- Persistence belongs to repositories
+- Client Components must use lib/api helpers
 
-- Optional empty fields should become undefined before validation.
+---
 
-- Forms should:
-  - reuse schemas
-  - infer types from zod
-  - use reset() for edit mode
+# Auth Rules
+
+- Supabase session is the single source of truth
+- Do NOT create custom session systems
+- Tenant context must remain explicit
+- Always assume multi-tenant architecture
+
+---
+
+# CRUD Rules
+
+Routes must use Spanish naming.
+
+Allowed:
+
+```txt
+/crear
+/[id]
+```
+
+Not allowed:
+
+```txt
+/new
+/edit
+/editar
+```
+
+---
+
+# Form Rules
+
+Forms must use:
+
+- react-hook-form
+- zod
+- zodResolver
+
+Validation mode:
+
+```txt
+onBlur
+```
+
+Validation UX:
+
+- compact errors
+- helper text below fields
+- no tooltip validation
+
+---
+
+# UX Rules
+
+The product follows:
+
+- minimal UI
+- compact spacing
+- bordered cards
+- neutral palette
+- data-dense layouts
+- Notion/GitHub/Linear inspired UX
+
+Avoid:
+
+- oversized spacing
+- heavy shadows
+- visually noisy UI
+- unnecessary animations
+
+---
+
+# Overlay Rules
+
+Use:
+
+- Modal → confirmations/destructive actions
+- SidePanel → nested CRUDs/contextual forms
+- Toast → async feedback
+
+Do NOT invent alternate overlay systems.
+
+---
+
+# Scope Control
+
+DO NOT:
+
+- anticipate future features
+- add hidden functionality
+- create extra abstractions
+- over-engineer implementations
+- introduce premature abstractions
+
+Prioritize:
+
+- consistency
+- clarity
+- incremental progress
+- reuse of existing patterns
