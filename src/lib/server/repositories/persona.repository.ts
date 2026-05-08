@@ -6,7 +6,7 @@ export const personaRepository = {
   async getAll(ctx: Ctx) {
     return ctx.supabase
       .from("persona")
-      .select("id, nombre, apellido, documento, cuil, email, telefono")
+      .select("id, nombre, apellido, documento, cuil")
       .eq("tenant_id", ctx.tenant_id)
       .filter("deleted_at", "is", null)
       .order("apellido", { ascending: true });
@@ -15,7 +15,7 @@ export const personaRepository = {
   async getById(ctx: Ctx, id: string) {
     const { data, error } = await ctx.supabase
       .from("persona")
-      .select("id, nombre, apellido, documento, cuil, email, telefono")
+      .select("id, nombre, apellido, documento, cuil")
       .eq("id", id)
       .eq("tenant_id", ctx.tenant_id)
       .filter("deleted_at", "is", null)

@@ -46,18 +46,18 @@ import {
 } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { SearchInput } from "@/components/ui/search-input";
-import { SelectShowcase } from "@/app/ui-kit/select-showcase";
-import { FormValidationShowcase, CurrencyInputShowcase } from "@/app/ui-kit/form-showcase";
-import { ToastShowcase } from "@/app/ui-kit/toast-showcase";
-import { DatePickerShowcase } from "@/app/ui-kit/date-picker-showcase";
-import { DropdownShowcase, ModalShowcase } from "@/app/ui-kit/dropdown-modal-showcase";
+import { SelectShowcase } from "@/app/(internal)/ui-kit/select-showcase";
+import { FormValidationShowcase, CurrencyInputShowcase } from "@/app/(internal)/ui-kit/form-showcase";
+import { ToastShowcase } from "@/app/(internal)/ui-kit/toast-showcase";
+import { DatePickerShowcase } from "@/app/(internal)/ui-kit/date-picker-showcase";
+import { DropdownShowcase, ModalShowcase } from "@/app/(internal)/ui-kit/dropdown-modal-showcase";
 import {
   Table,
   TableHeader,
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import { SortableTableShowcase, TableFilterShowcase, PaginatedTableShowcase, ColumnVisibilityShowcase, GlobalSearchShowcase, FilteredTableShowcase, RowSelectionShowcase } from "@/app/ui-kit/table-showcase";
+import { FullDataSurfaceShowcase, SortableTableShowcase, TableFilterShowcase, PaginatedTableShowcase, ColumnVisibilityShowcase, GlobalSearchShowcase, FilteredTableShowcase, RowSelectionShowcase } from "@/app/(internal)/ui-kit/table-showcase";
 import { Spinner } from "@/components/ui/spinner";
 import { Skeleton, SkeletonCard, SkeletonTable } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -908,25 +908,6 @@ export default function UIKitPage() {
               </Card>
             </div>
 
-            <Divider />
-
-            {/* Table card */}
-            <div className="space-y-1.5">
-              <SectionLabel>Table card</SectionLabel>
-              <Card flat>
-                <CardHeader>
-                  <CardTitle>Recent invoices</CardTitle>
-                  <Button variant="ghost" size="sm">Export</Button>
-                </CardHeader>
-                <DataTable
-                  columns={INVOICE_COLS}
-                  rows={INVOICES}
-                  getRowKey={(r) => r.id}
-                  caption="Recent invoices"
-                />
-              </Card>
-            </div>
-
           </CardContent>
         </Card>
 
@@ -987,20 +968,45 @@ export default function UIKitPage() {
         <Card flat>
           <CardHeader>
             <CardTitle>Table</CardTitle>
-            <span className="font-mono text-xs text-zinc-400">Table · TableHeader · TableRow · TableCell</span>
+            <span className="font-mono text-xs text-zinc-400">TableSurface · TableToolbar · TableFooter · TableCell</span>
           </CardHeader>
           <CardContent className="space-y-5">
 
+            {/* Full data surface — flagship showcase */}
+            <div className="space-y-2">
+              <SectionLabel>Data surface completa — toolbar · sort · selección · acciones · footer</SectionLabel>
+              <FullDataSurfaceShowcase />
+            </div>
+
+            <Divider />
+
+            {/* DataTable — columnar, no surface wrapper */}
+            <div className="space-y-2">
+              <SectionLabel>DataTable — superficie de datos sin toolbar</SectionLabel>
+              <div className="flex items-center justify-between py-1">
+                <span className="text-sm font-medium text-zinc-700">Facturas recientes</span>
+                <Button variant="ghost" size="sm">Exportar</Button>
+              </div>
+              <DataTable
+                columns={INVOICE_COLS}
+                rows={INVOICES}
+                getRowKey={(r) => r.id}
+                caption="Facturas recientes"
+              />
+            </div>
+
+            <Divider />
+
             {/* Basic */}
             <div className="space-y-1.5">
-              <SectionLabel>Basic</SectionLabel>
+              <SectionLabel>Básica</SectionLabel>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableCell isHeader>Name</TableCell>
+                    <TableCell isHeader>Nombre</TableCell>
                     <TableCell isHeader>Email</TableCell>
-                    <TableCell isHeader>Role</TableCell>
-                    <TableCell isHeader>Joined</TableCell>
+                    <TableCell isHeader>Rol</TableCell>
+                    <TableCell isHeader>Fecha</TableCell>
                   </TableRow>
                 </TableHeader>
                 <tbody>
@@ -1020,14 +1026,14 @@ export default function UIKitPage() {
 
             {/* Status badges */}
             <div className="space-y-1.5">
-              <SectionLabel>With status badges</SectionLabel>
+              <SectionLabel>Con badges de estado</SectionLabel>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableCell isHeader>Project</TableCell>
-                    <TableCell isHeader>Owner</TableCell>
-                    <TableCell isHeader>Due</TableCell>
-                    <TableCell isHeader align="right">Status</TableCell>
+                    <TableCell isHeader>Proyecto</TableCell>
+                    <TableCell isHeader>Responsable</TableCell>
+                    <TableCell isHeader>Vencimiento</TableCell>
+                    <TableCell isHeader align="right">Estado</TableCell>
                   </TableRow>
                 </TableHeader>
                 <tbody>
@@ -1047,16 +1053,16 @@ export default function UIKitPage() {
 
             <Divider />
 
-            {/* Actions column */}
+            {/* Actions column — "..." menu only */}
             <div className="space-y-1.5">
-              <SectionLabel>With actions column</SectionLabel>
+              <SectionLabel>Con columna de acciones — menú &ldquo;…&rdquo;</SectionLabel>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableCell isHeader>Name</TableCell>
+                    <TableCell isHeader>Nombre</TableCell>
                     <TableCell isHeader>Email</TableCell>
-                    <TableCell isHeader>Role</TableCell>
-                    <TableCell isHeader align="right" sticky>Actions</TableCell>
+                    <TableCell isHeader>Rol</TableCell>
+                    <TableCell isHeader sticky className="w-px whitespace-nowrap">Acciones</TableCell>
                   </TableRow>
                 </TableHeader>
                 <tbody>
@@ -1065,51 +1071,24 @@ export default function UIKitPage() {
                       <TableCell className="font-medium text-zinc-900">{u.name}</TableCell>
                       <TableCell>{u.email}</TableCell>
                       <TableCell>{u.role}</TableCell>
-                      <TableCell align="right" sticky>
-                        <div className="flex items-center justify-end gap-0.5">
-                          {/* View */}
-                          <button
-                            type="button"
-                            aria-label="View"
-                            className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-700"
-                          >
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-                              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" />
-                              <circle cx="8" cy="8" r="1.75" />
+                      <TableCell sticky className="w-px whitespace-nowrap">
+                        <DropdownMenu align="end">
+                          <DropdownMenuTrigger className="flex size-7 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+                            <svg viewBox="0 0 16 16" fill="currentColor" className="size-4" aria-hidden>
+                              <circle cx="3" cy="8" r="1.25" />
+                              <circle cx="8" cy="8" r="1.25" />
+                              <circle cx="13" cy="8" r="1.25" />
                             </svg>
-                          </button>
-                          {/* Delete */}
-                          <button
-                            type="button"
-                            aria-label="Delete"
-                            className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors duration-100 hover:bg-red-50 hover:text-red-500"
-                          >
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-                              <path d="M2 4h12" />
-                              <path d="M5 4V2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V4" />
-                              <path d="M3.5 4l.75 9h7.5l.75-9" />
-                              <path d="M6.5 7v4M9.5 7v4" />
-                            </svg>
-                          </button>
-                          {/* More actions */}
-                          <DropdownMenu align="end">
-                            <DropdownMenuTrigger className="flex size-7 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600">
-                              <svg viewBox="0 0 16 16" fill="currentColor" className="size-4" aria-hidden>
-                                <circle cx="3" cy="8" r="1.25" />
-                                <circle cx="8" cy="8" r="1.25" />
-                                <circle cx="13" cy="8" r="1.25" />
-                              </svg>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600 hover:bg-red-50 hover:text-red-700">
-                                Remove
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem>Ver detalle</DropdownMenuItem>
+                            <DropdownMenuItem>Editar</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600 hover:bg-red-50 hover:text-red-700">
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -1121,7 +1100,7 @@ export default function UIKitPage() {
 
             {/* Sortable columns */}
             <div className="space-y-1.5">
-              <SectionLabel>Sortable columns</SectionLabel>
+              <SectionLabel>Columnas ordenables</SectionLabel>
               <SortableTableShowcase />
             </div>
 
@@ -1129,7 +1108,7 @@ export default function UIKitPage() {
 
             {/* Search filter */}
             <div className="space-y-1.5">
-              <SectionLabel>With search filter</SectionLabel>
+              <SectionLabel>Con búsqueda integrada</SectionLabel>
               <TableFilterShowcase />
             </div>
 
@@ -1137,15 +1116,15 @@ export default function UIKitPage() {
 
             {/* Global search */}
             <div className="space-y-1.5">
-              <SectionLabel>Global search</SectionLabel>
+              <SectionLabel>Búsqueda global + conteo</SectionLabel>
               <GlobalSearchShowcase />
             </div>
 
             <Divider />
 
-            {/* Pagination */}
+            {/* Pagination integrated */}
             <div className="space-y-1.5">
-              <SectionLabel>With pagination</SectionLabel>
+              <SectionLabel>Con footer de paginación integrado</SectionLabel>
               <PaginatedTableShowcase />
             </div>
 
@@ -1153,7 +1132,7 @@ export default function UIKitPage() {
 
             {/* Column visibility */}
             <div className="space-y-1.5">
-              <SectionLabel>Column visibility</SectionLabel>
+              <SectionLabel>Visibilidad de columnas</SectionLabel>
               <ColumnVisibilityShowcase />
             </div>
 
@@ -1161,13 +1140,15 @@ export default function UIKitPage() {
 
             {/* Filters */}
             <div className="space-y-1.5">
-              <SectionLabel>Filters — status · date range · search</SectionLabel>
+              <SectionLabel>Filtros — estado · rango de fechas · búsqueda</SectionLabel>
               <FilteredTableShowcase />
             </div>
 
+            <Divider />
+
             {/* Row selection */}
             <div className="space-y-1.5">
-              <SectionLabel>Row selection — checkbox · select all · indeterminate</SectionLabel>
+              <SectionLabel>Selección de filas — checkbox · seleccionar todo · indeterminado</SectionLabel>
               <RowSelectionShowcase />
             </div>
 

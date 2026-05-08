@@ -2,9 +2,29 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  console.log("─────────────────────────────");
-  console.log("MIDDLEWARE");
-  console.log("PATH:", request.nextUrl.pathname);
+  const { pathname } = request.nextUrl;
+
+  // ─────────────────────────────
+  // PUBLIC / INTERNAL ROUTES
+  // ─────────────────────────────
+
+  const isPublicRoute =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/ui-kit") ||
+    pathname.startsWith("/demo") ||
+    pathname.startsWith("/.well-known") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api");
+
+  // Public routes bypass auth
+  if (isPublicRoute) {
+    return NextResponse.next();
+  }
+
+  // ─────────────────────────────
+  // PROTECTED WORKSPACE ROUTES
+  // ─────────────────────────────
 
   const response = NextResponse.next();
 
@@ -14,22 +34,10 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          const cookies = request.cookies.getAll();
-
-          console.log(
-            "REQUEST COOKIES:",
-            cookies.map((c) => c.name)
-          );
-
-          return cookies;
+          return request.cookies.getAll();
         },
 
         setAll(cookiesToSet) {
-          console.log(
-            "SETTING COOKIES:",
-            cookiesToSet.map((c) => c.name)
-          );
-
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options);
           });
@@ -40,20 +48,29 @@ export async function middleware(request: NextRequest) {
 
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
-  console.log("MIDDLEWARE USER:", user?.id);
-  console.log("MIDDLEWARE EMAIL:", user?.email);
-  console.log("MIDDLEWARE ERROR:", error);
+  // No authenticated user → redirect to login
+  if (!user) {
+    const loginUrl = new URL("/login", request.url);
 
-  console.log("─────────────────────────────");
+    // optional redirect back
+    loginUrl.searchParams.set("redirectTo", pathname);
+
+    return NextResponse.redirect(loginUrl);
+  }
 
   return response;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    /*
+     * Match all request paths except:
+     * - static files
+     * - images
+     * - assets
+     */
+    "/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -1,27 +1,40 @@
 "use client";
 
-import { type ReactNode, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import {
   Table,
   TableHeader,
   TableRow,
   TableCell,
   TableSearch,
-  useTableSearch,
+  TableSurface,
+  TableToolbar,
+  TableFooter,
+  TableBulkActions,
+  useTableSelection,
+  type SortDirection,
 } from "@/components/ui/table";
+
 import {
   Dropdown,
   DropdownTrigger,
   DropdownContent,
 } from "@/components/ui/dropdown";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmModal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { IconChevronDown } from "@/components/ui/icons";
+
 import { deletePersona } from "@/lib/api/personas";
+
+// ─────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────
 
 type Persona = {
   id: string;
@@ -29,65 +42,45 @@ type Persona = {
   apellido: string | null;
   documento: string | null;
   cuil: string | null;
-  email: string | null;
-  telefono: string | null;
 };
 
-type ColKey = "nombre" | "documento" | "cuil" | "email" | "telefono";
+type ColKey = "documento" | "cuil";
 
-type ColDef = {
-  key: ColKey;
-  label: string;
-  render: (p: Persona) => ReactNode;
+const COL_LABELS: Record<ColKey, string> = {
+  documento: "Documento",
+  cuil: "CUIL",
 };
 
-const COL_DEFS: ColDef[] = [
-  {
-    key: "nombre",
-    label: "Nombre",
-    render: (p) => (
-      <span className="font-medium text-zinc-900">
-        {[p.nombre, p.apellido].filter(Boolean).join(" ") || "—"}
-      </span>
-    ),
-  },
-  {
-    key: "documento",
-    label: "Documento",
-    render: (p) => (
-      <span className="text-sm text-zinc-400">{p.documento ?? "—"}</span>
-    ),
-  },
-  {
-    key: "cuil",
-    label: "CUIL",
-    render: (p) => (
-      <span className="text-sm text-zinc-400">{p.cuil ?? "—"}</span>
-    ),
-  },
-  {
-    key: "email",
-    label: "Email",
-    render: (p) => (
-      <span className="text-sm text-zinc-400">{p.email ?? "—"}</span>
-    ),
-  },
-  {
-    key: "telefono",
-    label: "Teléfono",
-    render: (p) => (
-      <span className="text-sm text-zinc-400">{p.telefono ?? "—"}</span>
-    ),
-  },
-];
+const ALL_COLS = ["documento", "cuil"] as ColKey[];
 
-const SEARCH_KEYS = [
-  "nombre",
-  "apellido",
-  "documento",
-  "email",
-  "telefono",
-] as const satisfies ReadonlyArray<keyof Persona>;
+type SortKey = "nombre" | "documento";
+
+// ─────────────────────────────────────────────────────────────
+// Icons
+// ─────────────────────────────────────────────────────────────
+
+function ColumnsIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-3.5"
+      aria-hidden
+    >
+      <rect x="1" y="2" width="4" height="12" rx="0.5" />
+      <rect x="6" y="2" width="4" height="12" rx="0.5" />
+      <rect x="11" y="2" width="4" height="12" rx="0.5" />
+    </svg>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Component
+// ─────────────────────────────────────────────────────────────
 
 type Props = {
   personas: Persona[];
@@ -95,25 +88,158 @@ type Props = {
 
 export function PersonasTable({ personas }: Props) {
   const { toast } = useToast();
+
   const router = useRouter();
-  const [pendingId, setPendingId] = useState<string | null>(null);
+
   const [isPending, startTransition] = useTransition();
 
-  const { query, setQuery, filtered } = useTableSearch(personas, SEARCH_KEYS);
+  const [pendingId, setPendingId] = useState<string | null>(null);
 
-  const [visible, setVisible] = useState<Record<ColKey, boolean>>({
-    nombre: true,
+  // Search
+  const [query, setQuery] = useState("");
+
+  // Sort
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+
+  const [sortDir, setSortDir] =
+    useState<SortDirection>("asc");
+
+  // Pagination
+  const [page, setPage] = useState(1);
+
+  const [pageSize, setPageSize] = useState(10);
+
+  // Column visibility
+  const [colVisible, setColVisible] = useState<
+    Record<ColKey, boolean>
+  >({
     documento: true,
     cuil: true,
-    email: true,
-    telefono: true,
   });
 
-  const toggle = (key: ColKey) =>
-    setVisible((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleCol = (key: ColKey) =>
+    setColVisible((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
 
-  const cols = COL_DEFS.filter((c) => visible[c.key]);
-  const visibleCount = cols.length;
+  const visibleColCount = ALL_COLS.filter(
+    (k) => colVisible[k],
+  ).length;
+
+  // ───────────────────────────────────────────────────────────
+  // Filter
+  // ───────────────────────────────────────────────────────────
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return personas;
+
+    const q = query.toLowerCase();
+
+    return personas.filter((p) =>
+      [p.nombre, p.apellido, p.documento, p.cuil].some(
+        (v) => v?.toLowerCase().includes(q),
+      ),
+    );
+  }, [personas, query]);
+
+  // ───────────────────────────────────────────────────────────
+  // Sort
+  // ───────────────────────────────────────────────────────────
+
+  const sorted = useMemo(() => {
+    if (!sortKey) return filtered;
+
+    return [...filtered].sort((a, b) => {
+      let av = "";
+      let bv = "";
+
+      if (sortKey === "nombre") {
+        av = [a.nombre, a.apellido]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        bv = [b.nombre, b.apellido]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+      } else {
+        av = (a[sortKey] ?? "").toLowerCase();
+
+        bv = (b[sortKey] ?? "").toLowerCase();
+      }
+
+      if (av < bv)
+        return sortDir === "asc" ? -1 : 1;
+
+      if (av > bv)
+        return sortDir === "asc" ? 1 : -1;
+
+      return 0;
+    });
+  }, [filtered, sortKey, sortDir]);
+
+  // ───────────────────────────────────────────────────────────
+  // Pagination
+  // ───────────────────────────────────────────────────────────
+
+  const total = sorted.length;
+
+  const pageStart = (page - 1) * pageSize;
+
+  const paginated = sorted.slice(
+    pageStart,
+    pageStart + pageSize,
+  );
+
+  const pageIds = paginated.map((p) => p.id);
+
+  // ───────────────────────────────────────────────────────────
+  // Selection
+  // ───────────────────────────────────────────────────────────
+
+  const {
+    selected,
+    isSelected,
+    toggle,
+    toggleAll,
+    clearSelection,
+    isAllSelected,
+    isIndeterminate,
+  } = useTableSelection(pageIds);
+
+  // ───────────────────────────────────────────────────────────
+  // Handlers
+  // ───────────────────────────────────────────────────────────
+
+  function handleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) =>
+        d === "asc" ? "desc" : "asc",
+      );
+    } else {
+      setSortKey(key);
+
+      setSortDir("asc");
+    }
+
+    setPage(1);
+
+    clearSelection();
+  }
+
+  function handleSearch(q: string) {
+    setQuery(q);
+
+    setPage(1);
+
+    clearSelection();
+  }
+
+  // ───────────────────────────────────────────────────────────
+  // Delete
+  // ───────────────────────────────────────────────────────────
 
   function handleDeleteClick(id: string) {
     setPendingId(id);
@@ -135,124 +261,22 @@ export function PersonasTable({ personas }: Props) {
         setPendingId(null);
 
         router.refresh();
-      } catch (err: any) {
-        toast.error(err.message ?? "Error al eliminar");
+      } catch (err: unknown) {
+        toast.error(
+          err instanceof Error
+            ? err.message
+            : "Error al eliminar",
+        );
       }
     });
   }
 
+  // checkbox + nombre + visibles + acciones
+  const totalCols =
+    1 + 1 + visibleColCount + 1;
+
   return (
     <>
-      <div className="space-y-3">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between gap-3">
-          <TableSearch
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar nombre, documento, email…"
-            aria-label="Buscar personas"
-            className="max-w-xs"
-          />
-
-          <Dropdown align="end">
-            <DropdownTrigger>
-              <Button
-                variant="secondary"
-                size="sm"
-                rightIcon={<IconChevronDown className="size-3.5" />}
-              >
-                Columns
-                {visibleCount < COL_DEFS.length && (
-                  <span className="ml-1 rounded bg-indigo-100 px-1 py-px text-[10px] font-semibold text-indigo-600">
-                    {visibleCount}/{COL_DEFS.length}
-                  </span>
-                )}
-              </Button>
-            </DropdownTrigger>
-            <DropdownContent className="min-w-[10rem] py-1.5">
-              {COL_DEFS.map((col) => (
-                <label
-                  key={col.key}
-                  className="mx-1 flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-zinc-600 transition-colors duration-100 hover:bg-zinc-50 hover:text-zinc-900"
-                >
-                  <Checkbox
-                    size="sm"
-                    checked={visible[col.key]}
-                    onChange={() => toggle(col.key)}
-                  />
-                  {col.label}
-                </label>
-              ))}
-            </DropdownContent>
-          </Dropdown>
-        </div>
-
-        {/* Table */}
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {cols.map((col) => (
-                <TableCell key={col.key} isHeader>
-                  {col.label}
-                </TableCell>
-              ))}
-              <TableCell isHeader align="right">
-                Acciones
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={cols.length + 1}
-                  className="px-4 py-8 text-center text-sm text-zinc-400"
-                >
-                  {query
-                    ? `Sin resultados para "${query}"`
-                    : "No hay personas"}
-                </td>
-              </tr>
-            ) : (
-              filtered.map((p) => (
-                <TableRow key={p.id}>
-                  {cols.map((col) => (
-                    <TableCell key={col.key}>{col.render(p)}</TableCell>
-                  ))}
-                  <TableCell align="right">
-                    <div className="flex items-center justify-end gap-0.5">
-                      <Link
-                        href={`/personas/${p.id}`}
-                        aria-label="Editar"
-                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-700"
-                      >
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5">
-                          <path d="M11.5 2.5a1.414 1.414 0 0 1 2 2L5 13H3v-2L11.5 2.5z" />
-                        </svg>
-                      </Link>
-
-                      <button
-                        type="button"
-                        aria-label="Eliminar"
-                        onClick={() => handleDeleteClick(p.id)}
-                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors duration-100 hover:bg-red-50 hover:text-red-500"
-                      >
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="size-3.5">
-                          <path d="M2 4h12" />
-                          <path d="M5 4V2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V4" />
-                          <path d="M3.5 4l.75 9h7.5l.75-9" />
-                          <path d="M6.5 7v4M9.5 7v4" />
-                        </svg>
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
-
       <ConfirmModal
         open={pendingId !== null}
         onClose={handleCancel}
@@ -263,6 +287,249 @@ export function PersonasTable({ personas }: Props) {
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
       />
+
+      <TableSurface>
+        <TableToolbar>
+          {selected.size > 0 ? (
+            <TableBulkActions
+              selected={selected.size}
+              total={total}
+              onClear={clearSelection}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  if (selected.size === 1) {
+                    handleDeleteClick(
+                      [...selected][0],
+                    );
+                  }
+                }}
+                className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs text-red-500 transition-colors hover:bg-red-50"
+              >
+                Eliminar
+              </button>
+            </TableBulkActions>
+          ) : (
+            <>
+              <TableSearch
+                value={query}
+                onChange={(e) =>
+                  handleSearch(e.target.value)
+                }
+                placeholder="Buscar nombre o documento…"
+                aria-label="Buscar personas"
+                className="w-56"
+              />
+
+              <Dropdown align="end">
+                <DropdownTrigger>
+                  <Button
+                    variant="secondary"
+                    leftIcon={<ColumnsIcon />}
+                    rightIcon={
+                      <IconChevronDown className="size-3.5" />
+                    }
+                  >
+                    Columnas
+                  </Button>
+                </DropdownTrigger>
+
+                <DropdownContent className="min-w-[10rem] py-1.5">
+                  {ALL_COLS.map((col) => (
+                    <label
+                      key={col}
+                      className="mx-1 flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
+                    >
+                      <Checkbox
+                        size="sm"
+                        checked={colVisible[col]}
+                        onChange={() =>
+                          toggleCol(col)
+                        }
+                      />
+
+                      {COL_LABELS[col]}
+                    </label>
+                  ))}
+                </DropdownContent>
+              </Dropdown>
+
+              <div className="ml-auto" />
+
+              <Link href="/personas/crear">
+                <Button>
+                  Nueva Persona
+                </Button>
+              </Link>
+            </>
+          )}
+        </TableToolbar>
+
+        <Table noBorder>
+          <TableHeader>
+            <TableRow>
+              <TableCell
+                isHeader
+                className="w-9 pl-3 pr-0"
+              >
+                <Checkbox
+                  size="sm"
+                  checked={isAllSelected}
+                  indeterminate={isIndeterminate}
+                  onChange={toggleAll}
+                  aria-label="Seleccionar todos"
+                />
+              </TableCell>
+
+              <TableCell
+                isHeader
+                sortable
+                sortDirection={
+                  sortKey === "nombre"
+                    ? sortDir
+                    : null
+                }
+                onSort={() =>
+                  handleSort("nombre")
+                }
+              >
+                Nombre
+              </TableCell>
+
+              {colVisible.documento && (
+                <TableCell
+                  isHeader
+                  sortable
+                  sortDirection={
+                    sortKey === "documento"
+                      ? sortDir
+                      : null
+                  }
+                  onSort={() =>
+                    handleSort("documento")
+                  }
+                >
+                  Documento
+                </TableCell>
+              )}
+
+              {colVisible.cuil && (
+                <TableCell isHeader>
+                  CUIL
+                </TableCell>
+              )}
+
+              <TableCell
+                isHeader
+                sticky
+                className="w-px whitespace-nowrap pr-3"
+              >
+                Acciones
+              </TableCell>
+            </TableRow>
+          </TableHeader>
+
+          <tbody>
+            {paginated.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={totalCols}
+                  className="px-4 py-10 text-center text-sm text-zinc-400"
+                >
+                  {query
+                    ? `Sin resultados para "${query}"`
+                    : "No hay personas registradas"}
+                </td>
+              </tr>
+            ) : (
+              paginated.map((p) => (
+                <TableRow
+                  key={p.id}
+                  selected={isSelected(p.id)}
+                >
+                  <TableCell className="w-9 pl-3 pr-0">
+                    <Checkbox
+                      size="sm"
+                      checked={isSelected(p.id)}
+                      onChange={() =>
+                        toggle(p.id)
+                      }
+                      aria-label={`Seleccionar ${[
+                        p.nombre,
+                        p.apellido,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}`}
+                    />
+                  </TableCell>
+
+                  <TableCell>
+                    <span className="font-medium text-zinc-900">
+                      {[p.nombre, p.apellido]
+                        .filter(Boolean)
+                        .join(" ") || "—"}
+                    </span>
+                  </TableCell>
+
+                  {colVisible.documento && (
+                    <TableCell className="text-zinc-500">
+                      {p.documento ?? "—"}
+                    </TableCell>
+                  )}
+
+                  {colVisible.cuil && (
+                    <TableCell className="text-zinc-500">
+                      {p.cuil ?? "—"}
+                    </TableCell>
+                  )}
+
+                  <TableCell
+                    sticky
+                    className="w-px whitespace-nowrap pr-3"
+                  >
+                    <div className="flex items-center justify-end gap-0.5">
+                      <Link
+                        href={`/personas/${p.id}`}
+                        aria-label="Editar"
+                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                      >
+                        ✏️
+                      </Link>
+
+                      <button
+                        type="button"
+                        aria-label="Eliminar"
+                        onClick={() =>
+                          handleDeleteClick(p.id)
+                        }
+                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </tbody>
+        </Table>
+
+        <TableFooter
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          pageSizeOptions={[5, 10, 25]}
+          onPageChange={setPage}
+          onPageSizeChange={(s) => {
+            setPageSize(s);
+
+            setPage(1);
+
+            clearSelection();
+          }}
+        />
+      </TableSurface>
     </>
   );
 }

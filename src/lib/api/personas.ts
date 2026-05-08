@@ -34,8 +34,6 @@ export async function createPersona(payload: {
   apellido: string;
   documento: string | null;
   cuil: string | null;
-  email: string | null;
-  telefono: string | null;
 }) {
   const res = await fetch("/api/personas", {
     method: "POST",
@@ -60,8 +58,6 @@ export async function updatePersona(
     apellido: string;
     documento: string | null;
     cuil: string | null;
-    email: string | null;
-    telefono: string | null;
   }
 ) {
   const res = await fetch(`/api/personas/${id}`, {

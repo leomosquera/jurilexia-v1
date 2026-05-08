@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { requireAuth } from "@/lib/auth/require-auth";
 import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
 import { personaService } from "@/lib/server/services/persona.service";
 import { PersonasTable } from "@/components/modules/personas/PersonasTable";
 
@@ -17,11 +15,6 @@ export default async function PersonasPage() {
           { label: "Inicio", href: "/" },
           { label: "Personas" },
         ]}
-        actions={
-          <Link href="/personas/crear">
-            <Button size="md">Nueva Persona</Button>
-          </Link>
-        }
       />
 
       <PersonasTable personas={personas} />

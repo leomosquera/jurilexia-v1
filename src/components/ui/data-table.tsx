@@ -32,17 +32,15 @@ export function DataTable<T,>({
   emptyState,
 }: DataTableProps<T>) {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overflow-y-visible rounded-xl border border-gray-200">
       <table className="w-full border-collapse text-sm">
-        {caption != null && (
-          <caption className="sr-only">{caption}</caption>
-        )}
-        <thead>
-          <tr className="border-b border-gray-200">
+        {caption != null && <caption className="sr-only">{caption}</caption>}
+        <thead className="border-b border-gray-200 bg-gray-50/70">
+          <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-3 py-2 text-xs font-medium uppercase tracking-wide text-gray-500 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
+                className={`px-3 py-2 text-xs font-medium text-gray-500 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
               >
                 {col.header}
               </th>
@@ -54,21 +52,21 @@ export function DataTable<T,>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-3 py-6 text-center text-sm text-gray-500"
+                className="px-4 py-8 text-center text-sm text-gray-400"
               >
-                {emptyState ?? "No data"}
+                {emptyState ?? "Sin datos"}
               </td>
             </tr>
           ) : (
             rows.map((row, index) => (
               <tr
                 key={getRowKey(row)}
-                className="border-b border-gray-200 transition-colors duration-100 last:border-0 hover:bg-gray-50"
+                className="border-b border-gray-100 transition-colors duration-100 last:border-0 hover:bg-gray-50/50"
               >
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`px-3 py-2 text-sm text-gray-900 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
+                    className={`px-3 py-2 align-middle text-sm text-gray-700 ${alignClass[col.align ?? "left"]} ${col.className ?? ""}`}
                   >
                     {col.render(row, index)}
                   </td>

@@ -15,6 +15,12 @@ import {
   ErrorMessage,
 } from "@/components/ui/form-field";
 import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import {
   createPersonaSchema,
   updatePersonaSchema,
   type CreatePersonaInput,
@@ -27,8 +33,6 @@ type FormValues = {
   apellido: string;
   documento: string;
   cuil: string;
-  email: string;
-  telefono: string;
 };
 
 const DEFAULT_VALUES: FormValues = {
@@ -36,8 +40,6 @@ const DEFAULT_VALUES: FormValues = {
   apellido: "",
   documento: "",
   cuil: "",
-  email: "",
-  telefono: "",
 };
 
 type Props =
@@ -79,8 +81,6 @@ export function PersonaForm(props: Props) {
           apellido: data?.apellido ?? "",
           documento: data?.documento ?? "",
           cuil: data?.cuil ?? "",
-          email: data?.email ?? "",
-          telefono: data?.telefono ?? "",
         });
       } catch (err: any) {
         toast.error(err.message || "Error al cargar persona");
@@ -104,8 +104,6 @@ export function PersonaForm(props: Props) {
         apellido: data.apellido!,
         documento: data.documento ?? null,
         cuil: data.cuil ?? null,
-        email: data.email ?? null,
-        telefono: data.telefono ?? null,
       };
 
       if (!isEdit) {
@@ -131,71 +129,82 @@ export function PersonaForm(props: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4 max-w-sm">
+    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
 
-      <FormField id="nombre" state={errors.nombre ? "error" : "default"}>
-        <Label required>Nombre</Label>
-        <Input {...register("nombre")} placeholder="José" />
-        {errors.nombre ? (
-          <ErrorMessage>{errors.nombre.message}</ErrorMessage>
-        ) : (
-          <HelperText>Solo letras y caracteres válidos.</HelperText>
-        )}
-      </FormField>
+      {/* ── Información personal ─────────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <div>
+            <CardTitle>Información personal</CardTitle>
+            <p className="mt-0.5 text-sm text-zinc-500">
+              Nombre y apellido tal como figuran en documentos oficiales.
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-x-4 gap-y-4">
+          <FormField id="nombre" state={errors.nombre ? "error" : "default"}>
+            <Label required>Nombre</Label>
+            <Input {...register("nombre")} placeholder="José" />
+            {errors.nombre ? (
+              <ErrorMessage>{errors.nombre.message}</ErrorMessage>
+            ) : (
+              <HelperText>Solo letras y caracteres válidos.</HelperText>
+            )}
+          </FormField>
 
-      <FormField id="apellido" state={errors.apellido ? "error" : "default"}>
-        <Label required>Apellido</Label>
-        <Input {...register("apellido")} placeholder="García" />
-        {errors.apellido ? (
-          <ErrorMessage>{errors.apellido.message}</ErrorMessage>
-        ) : (
-          <HelperText>Solo letras y caracteres válidos.</HelperText>
-        )}
-      </FormField>
+          <FormField id="apellido" state={errors.apellido ? "error" : "default"}>
+            <Label required>Apellido</Label>
+            <Input {...register("apellido")} placeholder="García" />
+            {errors.apellido ? (
+              <ErrorMessage>{errors.apellido.message}</ErrorMessage>
+            ) : (
+              <HelperText>Solo letras y caracteres válidos.</HelperText>
+            )}
+          </FormField>
+        </CardContent>
+      </Card>
 
-      <FormField id="documento" state={errors.documento ? "error" : "default"}>
-        <Label>DNI</Label>
-        <Input {...register("documento")} placeholder="12345678" />
-        {errors.documento ? (
-          <ErrorMessage>{errors.documento.message}</ErrorMessage>
-        ) : (
-          <HelperText>Sin puntos. Ejemplo: 12345678</HelperText>
-        )}
-      </FormField>
+      {/* ── Documentación ───────────────────────────────────────────────── */}
+      <Card>
+        <CardHeader>
+          <div>
+            <CardTitle>Documentación</CardTitle>
+            <p className="mt-0.5 text-sm text-zinc-500">
+              Identificación fiscal y tributaria de la persona física.
+            </p>
+          </div>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-x-4 gap-y-4">
+          <FormField id="documento" state={errors.documento ? "error" : "default"}>
+            <Label>DNI</Label>
+            <Input {...register("documento")} placeholder="12345678" />
+            {errors.documento ? (
+              <ErrorMessage>{errors.documento.message}</ErrorMessage>
+            ) : (
+              <HelperText>Sin puntos. Ejemplo: 12345678</HelperText>
+            )}
+          </FormField>
 
-      <FormField id="cuil" state={errors.cuil ? "error" : "default"}>
-        <Label>CUIL</Label>
-        <Input {...register("cuil")} placeholder="20-12345678-0" />
-        {errors.cuil ? (
-          <ErrorMessage>{errors.cuil.message}</ErrorMessage>
-        ) : (
-          <HelperText>Con o sin guiones. Ej: 20-12345678-0</HelperText>
-        )}
-      </FormField>
+          <FormField id="cuil" state={errors.cuil ? "error" : "default"}>
+            <Label>CUIL</Label>
+            <Input {...register("cuil")} placeholder="20-12345678-0" />
+            {errors.cuil ? (
+              <ErrorMessage>{errors.cuil.message}</ErrorMessage>
+            ) : (
+              <HelperText>Con o sin guiones. Ej: 20-12345678-0</HelperText>
+            )}
+          </FormField>
+        </CardContent>
+      </Card>
 
-      <FormField id="email" state={errors.email ? "error" : "default"}>
-        <Label>Email</Label>
-        <Input {...register("email")} type="email" placeholder="persona@ejemplo.com" />
-        {errors.email ? (
-          <ErrorMessage>{errors.email.message}</ErrorMessage>
-        ) : (
-          <HelperText>Usaremos este email para contacto.</HelperText>
-        )}
-      </FormField>
 
-      <FormField id="telefono" state={errors.telefono ? "error" : "default"}>
-        <Label>Teléfono</Label>
-        <Input {...register("telefono")} placeholder="+54 11 1234-5678" />
-        {errors.telefono ? (
-          <ErrorMessage>{errors.telefono.message}</ErrorMessage>
-        ) : (
-          <HelperText>Incluí código de área.</HelperText>
-        )}
-      </FormField>
 
-      <Button type="submit" size="sm" loading={isPending}>
-        {isEdit ? "Guardar" : "Crear"}
-      </Button>
+      {/* ── Acciones ─────────────────────────────────────────────────────── */}
+      <div className="flex justify-end">
+        <Button type="submit" loading={isPending}>
+          {isEdit ? "Guardar cambios" : "Crear persona"}
+        </Button>
+      </div>
 
     </form>
   );

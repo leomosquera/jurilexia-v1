@@ -24,18 +24,6 @@ export const createPersonaSchema = z.object({
     .max(100, MESSAGES.maxLength(100))
     .regex(PERSON_NAME_REGEX, MESSAGES.invalidName),
 
-  // Empty string → undefined; non-empty → validated email
-  email: z.preprocess(
-    emptyToUndefined,
-    z.string().email(MESSAGES.invalidEmail).max(254, MESSAGES.maxLength(254)).optional()
-  ),
-
-  // Empty string → undefined; non-empty → normalized to E.164
-  telefono: z.preprocess(
-    emptyToUndefined,
-    z.string().max(30, MESSAGES.maxLength(30)).transform(normalizePhone).optional()
-  ),
-
   // Strips dots → validates digit count
   documento: z.preprocess(
     (v) => (typeof v === "string" && v.trim() ? normalizeDNI(v) : undefined),
