@@ -18,7 +18,7 @@ export const personaRepository = {
   async getById(ctx: Ctx, id: string) {
     const { data, error } = await ctx.supabase
       .from("persona")
-      .select("id, nombre, apellido, documento, cuil")
+      .select("id, nombre, apellido, documento, cuil, sexo, fecha_nacimiento")
       .eq("id", id)
       .eq("tenant_id", ctx.tenant_id)
       .filter("deleted_at", "is", null)

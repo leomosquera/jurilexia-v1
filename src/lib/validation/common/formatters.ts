@@ -31,3 +31,13 @@ export function formatCUIL(value: string): string {
   }
   return digits;
 }
+
+/**
+ * Converts an ISO date string to dd/mm/yyyy for display in form inputs.
+ * "1985-03-25" → "25/03/1985"
+ */
+export function formatFechaNacimiento(isoDate: string): string {
+  const [yyyy, mm, dd] = isoDate.split("-");
+  if (!yyyy || !mm || !dd) return isoDate;
+  return `${dd}/${mm}/${yyyy}`;
+}

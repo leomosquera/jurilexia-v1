@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { createPersona, getPersona, updatePersona } from "@/lib/api/personas";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
 import {
   FormField,
@@ -23,17 +24,25 @@ import {
 import {
   createPersonaSchema,
   updatePersonaSchema,
+  SEXOS,
+  SEXO_LABELS,
   type CreatePersonaInput,
 } from "@/lib/validation/schemas/persona.schema";
+import { formatFechaNacimiento } from "@/lib/validation/common/formatters";
 import { ContactosCard, type LocalContacto } from "./ContactosCard";
+import { DomiciliosCard, type LocalDomicilio } from "./DomiciliosCard";
+
+const SEXO_OPTIONS = SEXOS.map((s) => ({ value: s, label: SEXO_LABELS[s] }));
 
 // The form always works with string values — the schema handles
-// normalization (DNI dots, CUIL dashes, phone E.164) on submit.
+// normalization (DNI dots, CUIL dashes, fecha dd/mm/aaaa → ISO) on submit.
 type FormValues = {
   nombre: string;
   apellido: string;
   documento: string;
   cuil: string;
+  sexo: string;
+  fecha_nacimiento: string;
 };
 
 const DEFAULT_VALUES: FormValues = {
@@ -41,6 +50,8 @@ const DEFAULT_VALUES: FormValues = {
   apellido: "",
   documento: "",
   cuil: "",
+  sexo: "",
+  fecha_nacimiento: "",
 };
 
 type Props =
@@ -55,11 +66,13 @@ export function PersonaForm(props: Props) {
   const [loading, setLoading] = useState(isEdit);
   const [isPending, setIsPending] = useState(false);
   const [localContactos, setLocalContactos] = useState<LocalContacto[]>([]);
+  const [localDomicilios, setLocalDomicilios] = useState<LocalDomicilio[]>([]);
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +96,10 @@ export function PersonaForm(props: Props) {
           apellido: data?.apellido ?? "",
           documento: data?.documento ?? "",
           cuil: data?.cuil ?? "",
+          sexo: data?.sexo ?? "",
+          fecha_nacimiento: data?.fecha_nacimiento
+            ? formatFechaNacimiento(data.fecha_nacimiento)
+            : "",
         });
       } catch (err: any) {
         toast.error(err.message || "Error al cargar persona");
@@ -106,10 +123,12 @@ export function PersonaForm(props: Props) {
         apellido: data.apellido!,
         documento: data.documento ?? null,
         cuil: data.cuil ?? null,
+        sexo: data.sexo ?? null,
+        fecha_nacimiento: data.fecha_nacimiento ?? null,
       };
 
       if (!isEdit) {
-        await createPersona({ ...payload, contactos: localContactos });
+        await createPersona({ ...payload, contactos: localContactos, domicilios: localDomicilios });
         toast.success("Persona creada");
         router.replace("/personas");
         return;
@@ -163,6 +182,41 @@ export function PersonaForm(props: Props) {
               <HelperText>Solo letras y caracteres válidos.</HelperText>
             )}
           </FormField>
+
+          <FormField id="sexo" state={errors.sexo ? "error" : "default"}>
+            <Label>Sexo</Label>
+            <Controller
+              name="sexo"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  options={SEXO_OPTIONS}
+                  value={field.value as string}
+                  onChange={field.onChange}
+                  placeholder="Seleccionar…"
+                  state={errors.sexo ? "error" : "default"}
+                />
+              )}
+            />
+            {errors.sexo && (
+              <ErrorMessage>{errors.sexo.message}</ErrorMessage>
+            )}
+          </FormField>
+
+          <FormField id="fecha_nacimiento" state={errors.fecha_nacimiento ? "error" : "default"}>
+            <Label>Fecha de nacimiento</Label>
+            <Input
+              {...register("fecha_nacimiento")}
+              placeholder="dd/mm/aaaa"
+              inputMode="numeric"
+              state={errors.fecha_nacimiento ? "error" : "default"}
+            />
+            {errors.fecha_nacimiento ? (
+              <ErrorMessage>{errors.fecha_nacimiento.message}</ErrorMessage>
+            ) : (
+              <HelperText>Ejemplo: 25/03/1985</HelperText>
+            )}
+          </FormField>
         </CardContent>
       </Card>
 
@@ -212,6 +266,20 @@ export function PersonaForm(props: Props) {
           mode="create"
           contactos={localContactos}
           onChange={setLocalContactos}
+        />
+      )}
+
+      {/* ── Domicilios ───────────────────────────────────────────────────── */}
+      {isEdit ? (
+        <DomiciliosCard
+          mode="edit"
+          personaId={(props as { mode: "edit"; id: string }).id}
+        />
+      ) : (
+        <DomiciliosCard
+          mode="create"
+          domicilios={localDomicilios}
+          onChange={setLocalDomicilios}
         />
       )}
 

@@ -34,6 +34,8 @@ export async function createPersona(payload: {
   apellido: string;
   documento: string | null;
   cuil: string | null;
+  sexo?: string | null;
+  fecha_nacimiento?: string | null;
   contactos?: Array<{
     canal: string;
     categoria: string;
@@ -42,6 +44,19 @@ export async function createPersona(payload: {
     predeterminado: boolean;
     verificado: boolean;
     pais_codigo: string;
+  }>;
+  domicilios?: Array<{
+    categoria: string;
+    calle: string;
+    numero?: string | null;
+    piso?: string | null;
+    departamento?: string | null;
+    barrio?: string | null;
+    localidad_id?: string | null;
+    codigo_postal?: string | null;
+    descripcion?: string | null;
+    predeterminado: boolean;
+    activo: boolean;
   }>;
 }) {
   const res = await fetch("/api/personas", {
@@ -67,6 +82,8 @@ export async function updatePersona(
     apellido: string;
     documento: string | null;
     cuil: string | null;
+    sexo?: string | null;
+    fecha_nacimiento?: string | null;
   }
 ) {
   const res = await fetch(`/api/personas/${id}`, {

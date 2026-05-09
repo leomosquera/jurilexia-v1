@@ -10,6 +10,9 @@ export const MESSAGES = {
   invalidCUIL: "CUIL inválido. Formato esperado: 20-12345678-0",
   invalidDNI: "DNI inválido. Debe tener 7 u 8 dígitos",
   invalidName: "El nombre contiene caracteres no permitidos",
+  invalidDate: "Fecha inválida. Usá el formato dd/mm/aaaa",
+  dateInFuture: "La fecha no puede ser futura",
+  dateTooOld: "La fecha debe ser posterior al año 1900",
   minLength: (n: number) => `Mínimo ${n} caracteres`,
   maxLength: (n: number) => `Máximo ${n} caracteres`,
 } as const;

@@ -1,5 +1,6 @@
 import { personaRepository } from "../repositories/persona.repository";
 import { personaContactoRepository } from "../repositories/persona-contacto.repository";
+import { personaDomicilioRepository } from "../repositories/persona-domicilio.repository";
 import { normalizeContactoValor } from "@/lib/validation/schemas/persona-contacto.schema";
 
 type RawContacto = {
@@ -39,7 +40,7 @@ export const personaService = {
   },
 
   async create(ctx: any, payload: any) {
-    const { contactos, ...personaPayload } = payload;
+    const { contactos, domicilios, ...personaPayload } = payload;
     const persona = await personaRepository.create(ctx, personaPayload);
 
     // Create initial contactos if provided (create-mode local state)
@@ -54,6 +55,25 @@ export const personaService = {
           predeterminado: c.predeterminado,
           verificado: c.verificado,
           pais_codigo: c.pais_codigo ?? "AR",
+        });
+      }
+    }
+
+    // Create initial domicilios if provided (create-mode local state)
+    if (Array.isArray(domicilios) && domicilios.length > 0) {
+      for (const d of domicilios) {
+        await personaDomicilioRepository.create(ctx, persona.id, {
+          categoria: d.categoria,
+          calle: d.calle,
+          numero: d.numero ?? null,
+          piso: d.piso ?? null,
+          departamento: d.departamento ?? null,
+          barrio: d.barrio ?? null,
+          localidad_id: d.localidad_id ?? null,
+          codigo_postal: d.codigo_postal ?? null,
+          descripcion: d.descripcion ?? null,
+          predeterminado: d.predeterminado,
+          activo: d.activo,
         });
       }
     }
