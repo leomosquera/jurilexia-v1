@@ -323,3 +323,64 @@ Instead of:
 - z.infer<typeof schema>
 
 Because RHF expects the schema output type.
+
+---
+
+# Icon System Rules
+
+Use the centralized icon system from:
+
+components/ui/icons
+
+Import icons using:
+
+import { Icon } from "@/components/ui/icons";
+
+Use:
+
+<Icon.Edit />
+<Icon.Trash />
+<Icon.Download />
+
+Do NOT:
+
+- create inline SVG icons inside pages/components
+- duplicate icon components
+- create local icon systems
+- hardcode icon hover/color behaviors
+- create ad-hoc icon wrappers
+
+Icons must remain:
+- reusable
+- context-agnostic
+- size configurable via className
+- color controlled by parent context
+
+---
+
+# Action Icon Rules
+
+Interactive icon actions must use:
+
+components/ui/action-icon-button
+
+Use:
+
+<ActionIconButton>
+  <Icon.Edit />
+</ActionIconButton>
+
+Do NOT:
+
+- duplicate icon action button styles
+- create repeated hover classes
+- nest button elements
+- hardcode table action icon patterns
+
+ActionIconButton controls:
+- hover states
+- transitions
+- rounded styles
+- sizing variants
+- destructive variants
+- interaction behavior

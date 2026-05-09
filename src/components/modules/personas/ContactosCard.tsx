@@ -20,6 +20,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 
+import { ActionIconButton } from "@/components/ui/action-icon-button";
+import { Icon } from "@/components/ui/icons";
 import { ContactoSidePanel } from "./ContactoSidePanel";
 
 import {
@@ -118,6 +120,28 @@ function TrashIcon() {
   );
 }
 
+// ── Row overlay spinner ───────────────────────────────────────────────────────
+// Rendered inside an absolutely-positioned <td> that covers the entire row.
+// The spinner itself stays at full opacity since the overlay — not the row —
+// carries the dimming. Size and color are tuned for the white/50 backdrop.
+
+function RowSpinner() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      className="size-3.5 animate-spin text-zinc-400 shrink-0"
+      aria-hidden
+    >
+      <path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2Z" strokeOpacity="0.2" />
+      <path d="M8 2a6 6 0 0 1 6 6" />
+    </svg>
+  );
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function canalCountByType(
@@ -138,6 +162,9 @@ export function ContactosCard(props: Props) {
   // Edit-mode state
   const [contactos, setContactos] = useState<PersonaContacto[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Row-level loading: tracks which contacto IDs have a pending predeterminado toggle
+  const [pendingToggleIds, setPendingToggleIds] = useState<Set<string>>(new Set());
 
   // Shared UI state
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
@@ -269,8 +296,8 @@ export function ContactosCard(props: Props) {
       });
       toast.success("Contacto agregado");
       setSidePanelOpen(false);
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al agregar contacto");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Error al agregar contacto");
     } finally {
       setSidePanelPending(false);
     }
@@ -294,8 +321,8 @@ export function ContactosCard(props: Props) {
       });
       toast.success("Contacto actualizado");
       setSidePanelOpen(false);
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al actualizar contacto");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Error al actualizar contacto");
     } finally {
       setSidePanelPending(false);
     }
@@ -322,8 +349,8 @@ export function ContactosCard(props: Props) {
         });
         toast.success("Contacto eliminado");
         setDeletingId(null);
-      } catch (err: any) {
-        toast.error(err.message ?? "Error al eliminar contacto");
+      } catch (err: unknown) {
+        toast.error(err instanceof Error ? err.message : "Error al eliminar contacto");
       }
     });
   }
@@ -333,6 +360,9 @@ export function ContactosCard(props: Props) {
     canal: string,
   ) {
     if (props.mode !== "edit") return;
+
+    setPendingToggleIds((prev) => new Set(prev).add(contactoId));
+
     try {
       await setContactoPredeterminado(props.personaId, contactoId, canal);
       setContactos((prev) =>
@@ -343,8 +373,16 @@ export function ContactosCard(props: Props) {
         ),
       );
       toast.success("Contacto principal actualizado");
-    } catch (err: any) {
-      toast.error(err.message ?? "Error al actualizar predeterminado");
+    } catch (err: unknown) {
+      toast.error(
+        err instanceof Error ? err.message : "Error al actualizar predeterminado",
+      );
+    } finally {
+      setPendingToggleIds((prev) => {
+        const next = new Set(prev);
+        next.delete(contactoId);
+        return next;
+      });
     }
   }
 
@@ -486,9 +524,14 @@ export function ContactosCard(props: Props) {
                       ? (contacto as LocalContacto)._localId
                       : (contacto as PersonaContacto).id;
                   const isOnlyOfCanal = (canalCount[contacto.canal] ?? 0) <= 1;
+                  const isToggling =
+                    props.mode === "edit" && pendingToggleIds.has(id);
 
                   return (
-                    <TableRow key={id}>
+                    <TableRow
+                      key={id}
+                      className={`relative transition-colors duration-200${isToggling ? " pointer-events-none" : ""}`}
+                    >
                       <TableCell className="pl-5 w-8">
                         <span
                           className="inline-flex items-center justify-center size-6 rounded-md bg-zinc-50 border border-zinc-200 text-zinc-500"
@@ -510,22 +553,23 @@ export function ContactosCard(props: Props) {
                       </TableCell>
 
                       <TableCell>
-                      <Badge variant="neutral">
-                        {
-                          CATEGORIA_LABELS[
+                        <Badge variant="neutral">
+                          {CATEGORIA_LABELS[
                             contacto.categoria as keyof typeof CATEGORIA_LABELS
-                          ] ?? contacto.categoria
-                        }
-                      </Badge>
+                          ] ?? contacto.categoria}
+                        </Badge>
                       </TableCell>
 
                       <TableCell align="center">
                         <Switch
                           size="sm"
                           checked={contacto.predeterminado}
-                          disabled={isOnlyOfCanal && contacto.predeterminado}
+                          disabled={
+                            (isOnlyOfCanal && contacto.predeterminado) ||
+                            isToggling
+                          }
                           onChange={() => {
-                            if (contacto.predeterminado) return; // already set
+                            if (contacto.predeterminado) return;
                             if (props.mode === "create") {
                               handleCreateModeTogglePredeterminado(
                                 (contacto as LocalContacto)._localId,
@@ -543,24 +587,35 @@ export function ContactosCard(props: Props) {
 
                       <TableCell align="right" className="pr-4">
                         <div className="flex items-center justify-end gap-0.5">
-                          <button
-                            type="button"
+
+                          <ActionIconButton
                             aria-label="Editar contacto"
                             onClick={() => openEditPanel(contacto)}
-                            className="flex size-6 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                           >
-                            <EditIcon />
-                          </button>
-                          <button
-                            type="button"
+                            <Icon.Edit />
+                          </ActionIconButton>
+
+                          <ActionIconButton
+                            variant="destructive"
                             aria-label="Eliminar contacto"
                             onClick={() => setDeletingId(id)}
-                            className="flex size-6 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500"
                           >
-                            <TrashIcon />
-                          </button>
+                            <Icon.Trash />
+                          </ActionIconButton>
+
                         </div>
                       </TableCell>
+
+                      {/* Row-level overlay — absolutely fills the <tr> (requires `relative` on the row).
+                          The overlay carries the dimming so row content stays at full opacity underneath. */}
+                      {isToggling && (
+                        <td
+                          aria-hidden
+                          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-[0.5px] transition-opacity duration-200"
+                        >
+                          <RowSpinner />
+                        </td>
+                      )}
                     </TableRow>
                   );
                 })}

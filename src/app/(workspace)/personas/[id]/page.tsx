@@ -9,12 +9,15 @@ type Props = {
 
 export default async function EditarPersonaPage({ params }: Props) {
   await requireAuth();
+
   const { id } = await params;
 
   return (
     <SettingsContainer>
       <div className="space-y-8">
+
         <PageHeader
+          back
           title="Editar Persona"
           breadcrumb={[
             { label: "Personas", href: "/personas" },
@@ -23,6 +26,7 @@ export default async function EditarPersonaPage({ params }: Props) {
         />
 
         <PersonaForm mode="edit" id={id} />
+
       </div>
     </SettingsContainer>
   );

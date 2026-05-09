@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ActionIconButton } from "@/components/ui/action-icon-button";
+import { Icon } from "@/components/ui/icons";
 
 import {
   Table,
@@ -81,6 +83,7 @@ function ColumnsIcon() {
     </svg>
   );
 }
+
 
 // ─────────────────────────────────────────────────────────────
 // Component
@@ -518,24 +521,23 @@ export function PersonasTable({ personas }: Props) {
                     className="w-px whitespace-nowrap pr-3"
                   >
                     <div className="flex items-center justify-end gap-0.5">
-                      <Link
-                        href={`/personas/${p.id}`}
-                        aria-label="Editar"
-                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
-                      >
-                        ✏️
-                      </Link>
 
-                      <button
-                        type="button"
-                        aria-label="Eliminar"
-                        onClick={() =>
-                          handleDeleteClick(p.id)
-                        }
-                        className="flex size-7 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                      >
-                        🗑️
-                      </button>
+                    <Link
+                      href={`/personas/${p.id}`}
+                      aria-label="Editar"
+                      className="flex size-6 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+                    >
+                      <Icon.Edit />
+                    </Link>
+
+                    <ActionIconButton
+                      variant="destructive"
+                      aria-label="Eliminar"
+                      onClick={() => handleDeleteClick(p.id)}
+                    >
+                      <Icon.Trash />
+                    </ActionIconButton>
+
                     </div>
                   </TableCell>
                 </TableRow>

@@ -7,7 +7,7 @@ import { Table, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import { ConfirmModal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { deleteCliente } from "@/lib/api/cliente.api";
-import { Icon } from "@/components/ui/icons/index";
+import { Icon } from "@/components/ui/icons";
 
 type Cliente = {
   id: string;

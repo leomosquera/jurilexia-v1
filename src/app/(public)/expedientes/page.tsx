@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-import { Icon } from "@/components/ui/icons/index";
+import { Icon } from "@/components/ui/icons";
 
 function PlusSmIcon() {
   return (

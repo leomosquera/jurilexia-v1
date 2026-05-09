@@ -16,7 +16,8 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { Checkbox } from "@/components/ui/checkbox";
 import MainLayout from "@/components/layout/MainLayout";
 import { useState } from "react";
-import { Icon } from "@/components/ui/icons/index";
+import { ActionIconButton } from "@/components/ui/action-icon-button";
+import { Icon } from "@/components/ui/icons";
 
 import {
   DropdownMenu,
@@ -24,128 +25,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
-// ── Icons ─────────────────────────────────────────────────────────────────────
-
-function ChevronUpIcon() {
-  return (
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3" aria-hidden>
-      <path d="M2 8 6 4l4 4" />
-    </svg>
-  );
-}
-function ChevronDownIcon() {
-  return (
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-2.5" aria-hidden>
-      <path d="M2 4l4 4 4-4" />
-    </svg>
-  );
-}
-function TaskIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <rect x="2" y="2" width="12" height="12" rx="2" />
-      <path d="M5 8l2 2 4-4" />
-    </svg>
-  );
-}
-function BellIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <path d="M8 1.5A5 5 0 0 0 3 6.5v2L2 11h12l-1-2.5v-2A5 5 0 0 0 8 1.5Z" />
-      <path d="M6.5 11.5a1.5 1.5 0 0 0 3 0" />
-    </svg>
-  );
-}
-function ClockIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <circle cx="8" cy="8" r="6.5" />
-      <path d="M8 4.5V8l3 2" />
-    </svg>
-  );
-}
-function FileIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5 shrink-0 text-gray-400" aria-hidden>
-      <path d="M9 1.5H4a1.5 1.5 0 0 0-1.5 1.5v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5Z" />
-      <path d="M9 1.5V6H13.5M5.5 9.5h5M5.5 11.5h3" />
-    </svg>
-  );
-}
-function BriefcaseIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <rect x="1.5" y="5" width="13" height="9" rx="1.5" />
-      <path d="M5.5 5V3.5A1.5 1.5 0 0 1 7 2h2a1.5 1.5 0 0 1 1.5 1.5V5M1.5 9h13" />
-    </svg>
-  );
-}
-function CheckDoneIcon() {
-  return (
-    <svg viewBox="0 0 10 10" stroke="currentColor" strokeWidth="2"
-      strokeLinecap="round" strokeLinejoin="round" fill="none" className="size-2.5" aria-hidden>
-      <polyline points="1.5,5.5 4,8 8.5,2" />
-    </svg>
-  );
-}
-function RefreshIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <path d="M13.5 6A5.5 5.5 0 1 0 12.3 10.2" />
-      <polyline points="13.5 2 13.5 6 9.5 6" />
-    </svg>
-  );
-}
-function DownloadIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 13.5h11" />
-    </svg>
-  );
-}
-function DotsVerticalIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="currentColor" className="size-3.5 text-gray-400" aria-hidden>
-      <circle cx="8" cy="3.5" r="1.25" />
-      <circle cx="8" cy="8" r="1.25" />
-      <circle cx="8" cy="12.5" r="1.25" />
-    </svg>
-  );
-}
-function SendIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <path d="M14 2 2 8l4.5 1.5L14 2ZM6.5 9.5 9 14l5-12" />
-    </svg>
-  );
-}
-function PaperclipIcon() {
-  return (
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" className="size-3.5" aria-hidden>
-      <path d="M13 7.5 7.5 13a3.5 3.5 0 0 1-5-5l6-6A2 2 0 0 1 11.4 5L6 10.4A.5.5 0 0 1 5.3 9.7L10 5" />
-    </svg>
-  );
-}
-function PlusSmIcon() {
-  return (
-    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"
-      strokeLinecap="round" className="size-3" aria-hidden>
-      <path d="M6 2v8M2 6h8" />
-    </svg>
-  );
-}
 
 // ── Avatars ─────────────────────────────────────────────────────────────────
 function getAvatarColor(name: string) {
@@ -192,7 +71,7 @@ function StatusCell({
         className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition ${STATUS_COLORS[status]}`}
       >
         {status}
-        <ChevronDownIcon />
+        <Icon.ChevronDown className="size-2.5" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="min-w-[140px] right-0">
@@ -232,8 +111,8 @@ function PriorityCell({ priority }: { priority: TaskPriority }) {
 }
 
 function ActuacionTypeIcon({ type }: { type: "document" | "briefcase" | "scales" }) {
-  if (type === "briefcase") return <BriefcaseIcon />;
-  return <FileIcon />;
+  if (type === "briefcase") return <Icon.Briefcase className="size-3.5" />;
+  return <Icon.File className="size-3.5 shrink-0 text-gray-400" />;
 }
 
 // ── Mock data ─────────────────────────────────────────────────────────────────
@@ -444,14 +323,14 @@ export default function ExpedientesDemoPage() {
                   />
                 ))}
 
-                <button className="flex size-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition">
-                  <PlusSmIcon />
-                </button>
+                  <ActionIconButton>
+                    <Icon.PlusSm className="size-3" />
+                  </ActionIconButton>
               </div>
             </div>
 
             <div className="flex items-center gap-1 text-xs text-gray-400">
-              <ClockIcon />
+              <Icon.Clock className="size-3.5" />
               <span className="hidden sm:inline">Hace 2 horas</span>
             </div>
 
@@ -573,7 +452,7 @@ export default function ExpedientesDemoPage() {
                             : "bg-gray-100 text-gray-400 ring-1 ring-gray-200"
                       }`}
                     >
-                      {step.status === "done" ? <CheckDoneIcon /> : i + 1}
+                      {step.status === "done" ? <Icon.CheckDone className="size-2.5" /> : i + 1}
                     </div>
 
                   </div>
@@ -718,7 +597,7 @@ export default function ExpedientesDemoPage() {
                 <Badge variant="neutral">{TASKS.length}</Badge>
               </div>
               <CardHeaderActions>
-                <Button variant="outline-primary" size="md" leftIcon={<PlusSmIcon />}>
+                <Button variant="outline-primary" size="md" leftIcon={<Icon.PlusSm className="size-3" />}>
                   Nueva tarea
                 </Button>
               </CardHeaderActions>
@@ -798,9 +677,9 @@ export default function ExpedientesDemoPage() {
                           </button>
 
                           {/* 3 dots siempre visible pero más tenue */}
-                          <button className="flex size-7 items-center justify-center rounded text-gray-300 hover:bg-gray-100 hover:text-gray-700 transition">
-                            <DotsVerticalIcon />
-                          </button>
+                          <ActionIconButton>
+                            <Icon.DotsVertical className="size-3.5" />
+                          </ActionIconButton>
 
                         </div>
                       </TableCell>
@@ -820,10 +699,10 @@ export default function ExpedientesDemoPage() {
               </div>
 
               <CardHeaderActions>
-                <Button variant="primary" size="md" leftIcon={<PlusSmIcon />}>
+                <Button variant="primary" size="md" leftIcon={<Icon.PlusSm className="size-3" />}>
                   Actuación
                 </Button>
-                <Button variant="outline-primary" size="md" leftIcon={<RefreshIcon />}>
+                <Button variant="outline-primary" size="md" leftIcon={<Icon.Refresh className="size-3.5" />}>
                   PJN
                 </Button>
               </CardHeaderActions>
@@ -897,9 +776,9 @@ export default function ExpedientesDemoPage() {
                               Ver doc
                             </Button>
 
-                            <button className="flex size-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100">
-                              <DotsVerticalIcon />
-                            </button>
+                            <ActionIconButton>
+                              <Icon.DotsVertical className="size-3.5" />
+                            </ActionIconButton>
                           </div>
                         </div>
 
@@ -947,9 +826,9 @@ export default function ExpedientesDemoPage() {
                               Ver doc
                             </Button>
 
-                            <button className="flex size-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100">
-                              <DotsVerticalIcon />
-                            </button>
+                            <ActionIconButton>
+                              <Icon.DotsVertical className="size-3.5" />
+                            </ActionIconButton>
                           </div>
                         </div>
 
@@ -993,9 +872,9 @@ export default function ExpedientesDemoPage() {
                           <div className="flex items-center gap-2">
                             <Badge variant={act.variant}>{act.badge}</Badge>
 
-                            <button className="flex size-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100">
-                              <DotsVerticalIcon />
-                            </button>
+                            <ActionIconButton>
+                              <Icon.DotsVertical className="size-3.5" />
+                            </ActionIconButton>
                           </div>
                         </div>
 
@@ -1023,7 +902,7 @@ export default function ExpedientesDemoPage() {
                 <Badge variant="neutral">{DOCS.length}</Badge>
               </div>
               <CardHeaderActions>
-                <Button variant="outline-primary" size="md" leftIcon={<PlusSmIcon />}>
+                <Button variant="outline-primary" size="md" leftIcon={<Icon.PlusSm className="size-3" />}>
                   Subir documento
                 </Button>
               </CardHeaderActions>
@@ -1045,7 +924,7 @@ export default function ExpedientesDemoPage() {
                     <TableRow key={doc.id}>
                       <TableCell className="pl-4 py-2">
                         <div className="flex items-center gap-2">
-                          <FileIcon />
+                          <Icon.File className="size-3.5 shrink-0 text-gray-400" />
                           <span className="text-xs text-gray-900">{doc.nombre}</span>
                         </div>
                       </TableCell>
@@ -1066,12 +945,12 @@ export default function ExpedientesDemoPage() {
                       </TableCell>
                       <TableCell align="right" className="pr-4 py-2">
                         <div className="flex items-center justify-end gap-0.5">
-                          <button className="flex size-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-700">
-                            <DownloadIcon />
-                          </button>
-                          <button className="flex size-6 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-700">
-                            <DotsVerticalIcon />
-                          </button>
+                          <ActionIconButton>
+                            <Icon.Download className="size-3.5" />
+                          </ActionIconButton>
+                          <ActionIconButton>
+                            <Icon.DotsVertical className="size-3.5" />
+                          </ActionIconButton>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -1091,24 +970,18 @@ export default function ExpedientesDemoPage() {
               <div className="flex items-center gap-2">
                 <Avatar name="María López" size="sm" />
                 <div className="relative flex-1">
-                  <button
-                    className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    aria-label="Adjuntar archivo"
-                  >
-                    <PaperclipIcon />
-                  </button>
+                  <ActionIconButton>
+                    <Icon.Paperclip className="size-3.5" />
+                  </ActionIconButton>
                   <input
                     type="text"
                     readOnly
                     placeholder="Escribir un comentario..."
                     className="h-7 w-full rounded-lg border border-gray-200 bg-gray-50 pl-7 pr-8 text-xs text-gray-900 outline-none placeholder:text-gray-500 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-500"
                   />
-                  <button
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-700"
-                    aria-label="Enviar comentario"
-                  >
-                    <SendIcon />
-                  </button>
+                  <ActionIconButton>
+                    <Icon.Send className="size-3.5" />
+                  </ActionIconButton>
                 </div>
               </div>
               <div className="space-y-3">

@@ -14,7 +14,7 @@ export function IconButton({
   ...props
 }: IconButtonProps) {
   const base =
-    "inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-500 outline-none transition-all duration-200 ease-out hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40";
+    "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-zinc-500 outline-none transition-all duration-200 ease-out hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-indigo-500/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40";
   const styles =
     variant === "subtle"
       ? "bg-zinc-100/90 text-zinc-600 shadow-sm shadow-zinc-900/5 hover:bg-zinc-200/80 hover:text-zinc-900"

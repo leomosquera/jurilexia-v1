@@ -2,6 +2,51 @@ import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement> & { className?: string };
 
+export function IconEdit({
+  className = "size-4",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <path d="M11.5 2.5a1.414 1.414 0 0 1 2 2L5 13H3v-2L11.5 2.5z" />
+    </svg>
+  );
+}
+
+export function IconTrash({
+  className = "size-4",
+}: {
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <path d="M2 4h12" />
+      <path d="M5 4V2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V4" />
+      <path d="M3.5 4l.75 9h7.5l.75-9" />
+      <path d="M6.5 7v4M9.5 7v4" />
+    </svg>
+  );
+}
+
 export function IconMenu({ className, ...props }: IconProps) {
   return (
     <svg
@@ -322,26 +367,282 @@ export function IconLogOut({ className, ...props }: IconProps) {
   );
 }
 
+export function IconChevronUp({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M2 8 6 4l4 4" />
+    </svg>
+  );
+}
+
+export function IconDotsVertical({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <circle cx="8" cy="3.5" r="1.25" />
+      <circle cx="8" cy="8" r="1.25" />
+      <circle cx="8" cy="12.5" r="1.25" />
+    </svg>
+  );
+}
+
+export function IconTask({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <rect x="2" y="2" width="12" height="12" rx="2" />
+      <path d="M5 8l2 2 4-4" />
+    </svg>
+  );
+}
+
+export function IconClock({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M8 4.5V8l3 2" />
+    </svg>
+  );
+}
+
+export function IconFile({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M5 1.5h4l3 3v10H5a1.5 1.5 0 0 1-1.5-1.5v-10A1.5 1.5 0 0 1 5 1.5Z" />
+      <path d="M9 1.5v3h3" />
+    </svg>
+  );
+}
+
+export function IconCheckDone({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 10 10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <polyline points="1.5,5.5 4,8 8.5,2" />
+    </svg>
+  );
+}
+
+export function IconRefresh({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M13.5 6A5.5 5.5 0 1 0 12.3 10.2" />
+      <polyline points="13.5 2 13.5 6 9.5 6" />
+    </svg>
+  );
+}
+
+export function IconDownload({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 13.5h11" />
+    </svg>
+  );
+}
+
+export function IconSend({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M14 2 2 8l4.5 1.5L14 2ZM6.5 9.5 9 14l5-12" />
+    </svg>
+  );
+}
+
+export function IconPaperclip({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M13 7.5 7.5 13a3.5 3.5 0 0 1-5-5l6-6A2 2 0 0 1 11.4 5L6 10.4A.5.5 0 0 1 5.3 9.7L10 5" />
+    </svg>
+  );
+}
+
+export function IconPlusSm({
+  className = "size-4",
+  ...props
+}: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      className={className}
+      aria-hidden
+      {...props}
+    >
+      <path d="M6 2v8M2 6h8" />
+    </svg>
+  );
+}
+
 const iconMap = {
-  // Legacy entries kept for backward compatibility
-  layout:   IconLayout,
-  folder:   IconFolder,
+  // Legacy
+  layout: IconLayout,
   database: IconDatabase,
-  chart:    IconChart,
+  chart: IconChart,
   settings: IconSettings,
-  // New entries
-  home:         IconHome,
-  users:        IconUsers,
-  briefcase:    IconBriefcase,
-  "file-text":  IconFileText,
-  zap:          IconZap,
-  "bar-chart":  IconBarChart2,
-  calendar:     IconCalendar,
-  wrench:       IconWrench,
-  layers:       IconLayers,
-  bot:          IconBot,
+
+  // Generic
+  menu: IconMenu,
+  search: IconSearch,
+  bell: IconBell,
+  message: IconMessage,
+
+  // Actions
+  edit: IconEdit,
+  trash: IconTrash,
+
+  // Arrows
+  "chevron-down": IconChevronDown,
+  "chevron-up": IconChevronUp,
+
+  // Files
+  folder: IconFolder,
+  file: IconFile,
+  "file-text": IconFileText,
+  paperclip: IconPaperclip,
+
+  // Business
+  briefcase: IconBriefcase,
+  users: IconUsers,
+  home: IconHome,
+
+  // Analytics
+  zap: IconZap,
+  "bar-chart": IconBarChart2,
+  calendar: IconCalendar,
+  layers: IconLayers,
+  wrench: IconWrench,
+
+  // Misc
+  bot: IconBot,
+  clock: IconClock,
+  task: IconTask,
+
+  // Actions
+  refresh: IconRefresh,
+  download: IconDownload,
+  send: IconSend,
+
+  // UI
+  "dots-vertical": IconDotsVertical,
   "plus-circle": IconPlusCircle,
-  "log-out":    IconLogOut,
+  "plus-sm": IconPlusSm,
+
+  // Auth
+  "log-out": IconLogOut,
+
+  // Status
+  "check-done": IconCheckDone,
 } as const;
 
 export type NavIconId = keyof typeof iconMap;
@@ -356,3 +657,53 @@ export function NavIcon({
   const Cmp = iconMap[id as NavIconId] ?? IconLayout;
   return <Cmp className={className} />;
 }
+
+export const Icon = {
+  Menu: IconMenu,
+  Search: IconSearch,
+  Bell: IconBell,
+  Message: IconMessage,
+
+  ChevronDown: IconChevronDown,
+  ChevronUp: IconChevronUp,
+
+  Edit: IconEdit,
+  Trash: IconTrash,
+
+  Folder: IconFolder,
+  File: IconFile,
+
+  Layout: IconLayout,
+  Database: IconDatabase,
+  Chart: IconChart,
+  Settings: IconSettings,
+
+  Home: IconHome,
+  Users: IconUsers,
+  Briefcase: IconBriefcase,
+
+  FileText: IconFileText,
+
+  Zap: IconZap,
+  BarChart: IconBarChart2,
+  Calendar: IconCalendar,
+  Wrench: IconWrench,
+  Layers: IconLayers,
+
+  Bot: IconBot,
+
+  PlusCircle: IconPlusCircle,
+  PlusSm: IconPlusSm,
+
+  LogOut: IconLogOut,
+
+  CheckDone: IconCheckDone,
+  Refresh: IconRefresh,
+  Download: IconDownload,
+  Send: IconSend,
+  Paperclip: IconPaperclip,
+
+  Clock: IconClock,
+  Task: IconTask,
+  DotsVertical: IconDotsVertical,
+};

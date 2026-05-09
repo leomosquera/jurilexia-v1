@@ -1,16 +1,32 @@
 import { ReactNode } from "react";
 import { Breadcrumb, BreadcrumbItem } from "./breadcrumb";
+import { BackButton } from "@/components/ui/back-button";
 
 type Props = {
   title: string;
   breadcrumb?: BreadcrumbItem[];
   actions?: ReactNode;
+  back?: boolean;
 };
 
-export function PageHeader({ title, breadcrumb, actions }: Props) {
+export function PageHeader({
+  title,
+  breadcrumb,
+  actions,
+  back = false,
+}: Props) {
   return (
     <div className="w-full space-y-1.5">
-      {breadcrumb && <Breadcrumb items={breadcrumb} />}
+
+      {(breadcrumb || back) && (
+        <div className="flex items-center gap-1.5">
+          {back && <BackButton />}
+
+          {breadcrumb && (
+            <Breadcrumb items={breadcrumb} />
+          )}
+        </div>
+      )}
 
       <div className="flex w-full items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
@@ -25,6 +41,7 @@ export function PageHeader({ title, breadcrumb, actions }: Props) {
           </div>
         )}
       </div>
+
     </div>
   );
 }
