@@ -255,3 +255,71 @@ Prioritize:
 - clarity
 - incremental progress
 - reuse of existing patterns
+
+---
+
+# Zod Notes
+
+Project uses:
+- zod v4
+
+When handling validation errors:
+
+Use:
+- error.issues
+
+Do NOT use:
+- error.errors
+
+Zod v4 does NOT support:
+- required_error in z.enum()
+
+Use instead:
+- default enum validation messages
+- or `error:`
+
+---
+
+# TypeScript Rules
+
+Avoid:
+- `as any`
+
+Prefer:
+- proper inferred types
+- `keyof typeof`
+- typed unions from zod schemas
+
+Do NOT bypass TypeScript errors using `any` unless explicitly necessary.
+
+When using react-hook-form with Zod v4 schemas that use:
+- .default()
+- .transform()
+- .preprocess()
+
+Prefer:
+
+```ts id="winiaac3"
+useForm<
+  z.input<typeof schema>,
+  any,
+  z.output<typeof schema>
+>()
+```
+
+Because RHF resolver input/output types may differ.
+
+---
+
+When using react-hook-form with Zod v4 schemas that use:
+- .default()
+- .transform()
+- .preprocess()
+
+Prefer:
+- useForm<z.output<typeof schema>>()
+
+Instead of:
+- z.infer<typeof schema>
+
+Because RHF expects the schema output type.

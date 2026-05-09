@@ -194,3 +194,99 @@ The platform is expected to evolve toward:
 - contextual overlays
 - configurable workflows
 - advanced permission systems
+
+---
+
+# Overlay System
+
+The platform uses a consistent overlay system for contextual interactions.
+
+Official overlay primitives:
+
+- Modal
+- SidePanel
+- Toast
+
+---
+
+## Modal
+
+Used for:
+
+- confirmations
+- destructive actions
+- small focused interactions
+
+Characteristics:
+
+- centered overlay
+- compact content
+- blocking interaction pattern
+
+---
+
+## SidePanel
+
+Official contextual editing pattern for:
+
+- nested CRUDs
+- secondary forms
+- quick edit
+- contextual workflows
+- entity detail panels
+
+Location:
+
+```txt
+components/ui/side-panel.tsx
+```
+
+Characteristics:
+
+- right-side overlay
+- internal scroll
+- sticky header
+- sticky footer
+- responsive widths
+- mobile full-width behavior
+- reusable composition API
+- accessible dialog behavior
+
+The SidePanel must integrate with the existing UI Kit and be showcased inside the internal UI Kit/playground system.
+
+The SidePanel is intended to become the primary contextual workflow pattern across JurilexIA.
+
+---
+
+## Toast
+
+Used for:
+
+- async feedback
+- success messages
+- error notifications
+- non-blocking status communication
+
+---
+
+# Loading UX Principles
+
+Loading states should:
+
+- feel lightweight
+- preserve layout stability
+- avoid blocking the entire UI whenever possible
+- prioritize contextual feedback
+- reuse consistent loading patterns
+
+Prefer:
+
+- inline loading
+- skeletons
+- contextual progress
+
+Avoid:
+
+- full-screen spinners
+- layout jumps
+- blocking overlays for simple operations

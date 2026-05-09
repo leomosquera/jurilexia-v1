@@ -51,6 +51,7 @@ import { FormValidationShowcase, CurrencyInputShowcase } from "@/app/(internal)/
 import { ToastShowcase } from "@/app/(internal)/ui-kit/toast-showcase";
 import { DatePickerShowcase } from "@/app/(internal)/ui-kit/date-picker-showcase";
 import { DropdownShowcase, ModalShowcase } from "@/app/(internal)/ui-kit/dropdown-modal-showcase";
+import { SidePanelShowcase } from "@/app/(internal)/ui-kit/side-panel-showcase";
 import {
   Table,
   TableHeader,
@@ -916,6 +917,9 @@ export default function UIKitPage() {
 
         {/* ── Modal ── */}
         <ModalShowcase />
+
+        {/* ── SidePanel ── */}
+        <SidePanelShowcase />
 
         {/* ── DropdownMenu (legacy) ── */}
         <Card flat>

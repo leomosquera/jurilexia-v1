@@ -6,7 +6,10 @@ export const personaRepository = {
   async getAll(ctx: Ctx) {
     return ctx.supabase
       .from("persona")
-      .select("id, nombre, apellido, documento, cuil")
+      .select(`
+        id, nombre, apellido, documento, cuil,
+        persona_contacto(id, canal, valor, predeterminado, deleted_at)
+      `)
       .eq("tenant_id", ctx.tenant_id)
       .filter("deleted_at", "is", null)
       .order("apellido", { ascending: true });

@@ -34,6 +34,15 @@ export async function createPersona(payload: {
   apellido: string;
   documento: string | null;
   cuil: string | null;
+  contactos?: Array<{
+    canal: string;
+    categoria: string;
+    valor: string;
+    descripcion?: string | null;
+    predeterminado: boolean;
+    verificado: boolean;
+    pais_codigo: string;
+  }>;
 }) {
   const res = await fetch("/api/personas", {
     method: "POST",

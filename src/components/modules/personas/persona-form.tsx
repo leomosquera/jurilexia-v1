@@ -25,6 +25,7 @@ import {
   updatePersonaSchema,
   type CreatePersonaInput,
 } from "@/lib/validation/schemas/persona.schema";
+import { ContactosCard, type LocalContacto } from "./ContactosCard";
 
 // The form always works with string values — the schema handles
 // normalization (DNI dots, CUIL dashes, phone E.164) on submit.
@@ -53,6 +54,7 @@ export function PersonaForm(props: Props) {
 
   const [loading, setLoading] = useState(isEdit);
   const [isPending, setIsPending] = useState(false);
+  const [localContactos, setLocalContactos] = useState<LocalContacto[]>([]);
 
   const {
     register,
@@ -107,7 +109,7 @@ export function PersonaForm(props: Props) {
       };
 
       if (!isEdit) {
-        await createPersona(payload);
+        await createPersona({ ...payload, contactos: localContactos });
         toast.success("Persona creada");
         router.replace("/personas");
         return;
@@ -116,7 +118,7 @@ export function PersonaForm(props: Props) {
       const id = (props as { mode: "edit"; id: string }).id;
       await updatePersona(id, payload);
       toast.success("Persona actualizada");
-      router.replace("/personas");
+      router.refresh();
     } catch (err: any) {
       toast.error(err.message ?? "Error al guardar");
     } finally {
@@ -198,6 +200,20 @@ export function PersonaForm(props: Props) {
       </Card>
 
 
+
+      {/* ── Contactos ────────────────────────────────────────────────────── */}
+      {isEdit ? (
+        <ContactosCard
+          mode="edit"
+          personaId={(props as { mode: "edit"; id: string }).id}
+        />
+      ) : (
+        <ContactosCard
+          mode="create"
+          contactos={localContactos}
+          onChange={setLocalContactos}
+        />
+      )}
 
       {/* ── Acciones ─────────────────────────────────────────────────────── */}
       <div className="flex justify-end">

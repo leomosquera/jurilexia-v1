@@ -42,16 +42,20 @@ type Persona = {
   apellido: string | null;
   documento: string | null;
   cuil: string | null;
+  email_principal: string | null;
+  telefono_principal: string | null;
 };
 
-type ColKey = "documento" | "cuil";
+type ColKey = "documento" | "cuil" | "email_principal" | "telefono_principal";
 
 const COL_LABELS: Record<ColKey, string> = {
   documento: "Documento",
   cuil: "CUIL",
+  email_principal: "Email",
+  telefono_principal: "Teléfono",
 };
 
-const ALL_COLS = ["documento", "cuil"] as ColKey[];
+const ALL_COLS = ["email_principal", "telefono_principal", "documento", "cuil"] as ColKey[];
 
 type SortKey = "nombre" | "documento";
 
@@ -113,8 +117,10 @@ export function PersonasTable({ personas }: Props) {
   const [colVisible, setColVisible] = useState<
     Record<ColKey, boolean>
   >({
+    email_principal: true,
+    telefono_principal: true,
     documento: true,
-    cuil: true,
+    cuil: false,
   });
 
   const toggleCol = (key: ColKey) =>
@@ -137,7 +143,7 @@ export function PersonasTable({ personas }: Props) {
     const q = query.toLowerCase();
 
     return personas.filter((p) =>
-      [p.nombre, p.apellido, p.documento, p.cuil].some(
+      [p.nombre, p.apellido, p.documento, p.cuil, p.email_principal, p.telefono_principal].some(
         (v) => v?.toLowerCase().includes(q),
       ),
     );
@@ -271,9 +277,8 @@ export function PersonasTable({ personas }: Props) {
     });
   }
 
-  // checkbox + nombre + visibles + acciones
-  const totalCols =
-    1 + 1 + visibleColCount + 1;
+  // checkbox + nombre + visible cols + acciones
+  const totalCols = 1 + 1 + visibleColCount + 1;
 
   return (
     <>
@@ -397,6 +402,18 @@ export function PersonasTable({ personas }: Props) {
                 Nombre
               </TableCell>
 
+              {colVisible.email_principal && (
+                <TableCell isHeader>
+                  Email
+                </TableCell>
+              )}
+
+              {colVisible.telefono_principal && (
+                <TableCell isHeader>
+                  Teléfono
+                </TableCell>
+              )}
+
               {colVisible.documento && (
                 <TableCell
                   isHeader
@@ -471,6 +488,18 @@ export function PersonasTable({ personas }: Props) {
                         .join(" ") || "—"}
                     </span>
                   </TableCell>
+
+                  {colVisible.email_principal && (
+                    <TableCell className="text-zinc-500">
+                      {p.email_principal ?? "—"}
+                    </TableCell>
+                  )}
+
+                  {colVisible.telefono_principal && (
+                    <TableCell className="text-zinc-500">
+                      {p.telefono_principal ?? "—"}
+                    </TableCell>
+                  )}
 
                   {colVisible.documento && (
                     <TableCell className="text-zinc-500">
