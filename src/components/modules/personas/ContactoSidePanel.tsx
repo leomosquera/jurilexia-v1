@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Select } from "@/components/ui/select";
+import { InputGroup, InputAffix } from "@/components/ui/input-group";
 import {
   FormField,
   Label,
@@ -49,10 +50,15 @@ type Props = {
 const CANAL_OPTIONS = CANALES.map((c) => ({ value: c, label: CANAL_LABELS[c] }));
 const CATEGORIA_OPTIONS = CATEGORIAS.map((c) => ({ value: c, label: CATEGORIA_LABELS[c] }));
 
+// Phone country code options — expand as needed
+const PAIS_CODIGO_OPTIONS = [
+  { value: "AR", label: "🇦🇷 +54" },
+];
+
 const CANAL_PLACEHOLDERS: Record<string, string> = {
   email: "nombre@ejemplo.com",
-  telefono: "+54 9 11 1234 5678",
-  whatsapp: "+54 9 11 1234 5678",
+  telefono: "1131716941",
+  whatsapp: "1131716941",
   web: "https://ejemplo.com",
 };
 
@@ -192,17 +198,44 @@ export function ContactoSidePanel({
                 ? "Número de WhatsApp"
                 : "URL"}
             </Label>
-            <Input
-              {...register("valor")}
-              type={canal === "email" ? "email" : canal === "web" ? "url" : "tel"}
-              placeholder={CANAL_PLACEHOLDERS[canal] ?? ""}
-            />
+
+            {canal === "telefono" || canal === "whatsapp" ? (
+              <InputGroup state={errors.valor ? "error" : "default"}>
+                <InputAffix side="left" interactive>
+                  <Controller
+                    name="pais_codigo"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        id="pais_codigo-select"
+                        options={PAIS_CODIGO_OPTIONS}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                </InputAffix>
+                <Input
+                  {...register("valor")}
+                  inputMode="numeric"
+                  maxLength={12}
+                  placeholder="1131716941"
+                />
+              </InputGroup>
+            ) : (
+              <Input
+                {...register("valor")}
+                type={canal === "email" ? "email" : canal === "web" ? "url" : "text"}
+                placeholder={CANAL_PLACEHOLDERS[canal] ?? ""}
+              />
+            )}
+
             {errors.valor ? (
               <ErrorMessage>{errors.valor.message}</ErrorMessage>
             ) : (
               <HelperText>
                 {canal === "telefono" || canal === "whatsapp"
-                  ? "Incluí el código de país. Ej: +54 9 11 1234 5678"
+                  ? "Solo dígitos, sin código de país. Ej: 1131716941"
                   : canal === "web"
                   ? "Debe comenzar con https://"
                   : ""}
@@ -219,22 +252,6 @@ export function ContactoSidePanel({
             />
             <HelperText>Opcional. Referencia interna.</HelperText>
           </FormField>
-
-          {/* País (for phone/whatsapp only) */}
-          {(canal === "telefono" || canal === "whatsapp") && (
-            <FormField id="pais_codigo" state="default">
-              <Label>País por defecto</Label>
-              <Input
-                {...register("pais_codigo")}
-                placeholder="AR"
-                className="uppercase"
-                maxLength={2}
-              />
-              <HelperText>
-                Código ISO de 2 letras. Se usa para interpretar números sin prefijo.
-              </HelperText>
-            </FormField>
-          )}
 
           {/* Predeterminado */}
           <div className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3">

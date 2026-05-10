@@ -1,7 +1,8 @@
 "use client";
 
-import type { InputHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import { useFormFieldCtx } from "@/components/ui/form-field";
+import { useInputGroupCtx } from "@/components/ui/input-group";
 
 function InputSpinner() {
   return (
@@ -51,32 +52,41 @@ const hintStyles: Record<InputState, string> = {
   success: "text-emerald-600",
 };
 
-export function Input({
-  state: stateProp,
-  label,
-  hint,
-  leftIcon,
-  rightIcon,
-  loading = false,
-  className = "",
-  id: idProp,
-  disabled,
-  ...props
-}: InputProps) {
-  const ctx = useFormFieldCtx();
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    state: stateProp,
+    label,
+    hint,
+    leftIcon,
+    rightIcon,
+    loading = false,
+    className = "",
+    id: idProp,
+    disabled,
+    ...props
+  },
+  ref,
+) {
+  const ctx      = useFormFieldCtx();
+  const groupCtx = useInputGroupCtx();
 
-  // Props take precedence; fall back to FormField context values
-  const id = idProp ?? ctx?.id;
-  const state: InputState = stateProp ?? (ctx?.state as InputState) ?? "default";
+  // Props → FormField context → InputGroup context → default
+  const id    = idProp ?? ctx?.id;
+  const state: InputState =
+    stateProp ?? (ctx?.state as InputState) ?? (groupCtx?.state as InputState) ?? "default";
+
+  const isGrouped = groupCtx != null;
 
   // Loading spinner overrides any provided rightIcon
   const trailingIcon = loading ? <InputSpinner /> : rightIcon;
 
-  const pl = leftIcon != null ? "pl-8" : "pl-3";
-  const pr = trailingIcon != null ? "pr-8" : "pr-3";
+  const pl      = leftIcon != null ? "pl-8" : "pl-3";
+  const pr      = trailingIcon != null ? "pr-8" : "pr-3";
+  // Rounding is resolved by InputGroup at render time; fallback to rounded-lg standalone
+  const rounded = groupCtx?.inputRounding ?? "rounded-lg";
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={isGrouped ? "relative z-[1] flex-1 focus-within:z-[2]" : "flex flex-col gap-1.5"}>
       {label && (
         <label htmlFor={id} className="text-xs font-medium text-zinc-600">
           {label}
@@ -91,11 +101,12 @@ export function Input({
         )}
 
         <input
+          ref={ref}
           id={id}
           disabled={disabled || loading}
           aria-describedby={state === "error" && ctx?.errorId ? ctx.errorId : undefined}
           aria-invalid={state === "error" || undefined}
-          className={`h-8 w-full rounded-lg border bg-white text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-150 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 ${pl} ${pr} ${borderStyles[state]} ${className}`}
+          className={`h-8 w-full border bg-white text-sm text-zinc-900 outline-none placeholder:text-zinc-400 transition-all duration-150 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 ${rounded} ${pl} ${pr} ${borderStyles[state]} ${className}`}
           {...props}
         />
 
@@ -109,4 +120,6 @@ export function Input({
       {hint && <p className={`text-xs ${hintStyles[state]}`}>{hint}</p>}
     </div>
   );
-}
+});
+
+Input.displayName = "Input";

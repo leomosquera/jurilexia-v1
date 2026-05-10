@@ -48,6 +48,8 @@ import { Input } from "@/components/ui/input";
 import { SearchInput } from "@/components/ui/search-input";
 import { SelectShowcase } from "@/app/(internal)/ui-kit/select-showcase";
 import { FormValidationShowcase, CurrencyInputShowcase } from "@/app/(internal)/ui-kit/form-showcase";
+import { InputGroupShowcase } from "@/app/(internal)/ui-kit/input-group-showcase";
+import { FormattedInputsShowcase } from "@/app/(internal)/ui-kit/formatted-inputs-showcase";
 import { ToastShowcase } from "@/app/(internal)/ui-kit/toast-showcase";
 import { DatePickerShowcase } from "@/app/(internal)/ui-kit/date-picker-showcase";
 import { DropdownShowcase, ModalShowcase } from "@/app/(internal)/ui-kit/dropdown-modal-showcase";
@@ -523,6 +525,13 @@ export default function UIKitPage() {
             <CurrencyInputShowcase />
           </CardContent>
         </Card>
+
+        {/* ── Formatted Inputs ── */}
+        <FormattedInputsShowcase />
+
+        {/* ── InputGroup / InputAffix ── */}
+        <InputGroupShowcase />
+
 
         {/* ── Selects ── */}
         <SelectShowcase />

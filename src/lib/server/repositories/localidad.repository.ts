@@ -33,7 +33,27 @@ export const localidadRepository = {
       .order("nombre", { ascending: true })
       .limit(limit);
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data ?? [];
+  },
+
+  async getAllByProvincia(
+    ctx: Ctx,
+    provinciaId: string,
+  ): Promise<LocalidadRow[]> {
+    const { data, error } = await ctx.supabase
+      .from("localidades")
+      .select("id, provincia_id, nombre")
+      .eq("provincia_id", provinciaId)
+      .order("nombre", { ascending: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
     return data ?? [];
   },
 };

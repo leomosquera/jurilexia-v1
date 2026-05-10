@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { createPersona, getPersona, updatePersona } from "@/lib/api/personas";
 import { Input } from "@/components/ui/input";
+import { DniInput } from "@/components/ui/dni-input";
+import { CuitInput } from "@/components/ui/cuit-input";
+import { DateInput } from "@/components/ui/date-input";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { useToast } from "@/components/ui/toast";
@@ -28,7 +31,6 @@ import {
   SEXO_LABELS,
   type CreatePersonaInput,
 } from "@/lib/validation/schemas/persona.schema";
-import { formatFechaNacimiento } from "@/lib/validation/common/formatters";
 import { ContactosCard, type LocalContacto } from "./ContactosCard";
 import { DomiciliosCard, type LocalDomicilio } from "./DomiciliosCard";
 
@@ -97,9 +99,7 @@ export function PersonaForm(props: Props) {
           documento: data?.documento ?? "",
           cuil: data?.cuil ?? "",
           sexo: data?.sexo ?? "",
-          fecha_nacimiento: data?.fecha_nacimiento
-            ? formatFechaNacimiento(data.fecha_nacimiento)
-            : "",
+          fecha_nacimiento: data?.fecha_nacimiento ?? "",
         });
       } catch (err: any) {
         toast.error(err.message || "Error al cargar persona");
@@ -205,11 +205,17 @@ export function PersonaForm(props: Props) {
 
           <FormField id="fecha_nacimiento" state={errors.fecha_nacimiento ? "error" : "default"}>
             <Label>Fecha de nacimiento</Label>
-            <Input
-              {...register("fecha_nacimiento")}
-              placeholder="dd/mm/aaaa"
-              inputMode="numeric"
-              state={errors.fecha_nacimiento ? "error" : "default"}
+            <Controller
+              name="fecha_nacimiento"
+              control={control}
+              render={({ field, fieldState }) => (
+                <DateInput
+                  value={field.value || undefined}
+                  onChange={(v) => field.onChange(v ?? "")}
+                  onBlur={field.onBlur}
+                  state={fieldState.error ? "error" : "default"}
+                />
+              )}
             />
             {errors.fecha_nacimiento ? (
               <ErrorMessage>{errors.fecha_nacimiento.message}</ErrorMessage>
@@ -233,21 +239,43 @@ export function PersonaForm(props: Props) {
         <CardContent className="grid grid-cols-2 gap-x-4 gap-y-4">
           <FormField id="documento" state={errors.documento ? "error" : "default"}>
             <Label>DNI</Label>
-            <Input {...register("documento")} placeholder="12345678" />
+            <Controller
+              name="documento"
+              control={control}
+              render={({ field, fieldState }) => (
+                <DniInput
+                  value={field.value || undefined}
+                  onChange={(v) => field.onChange(v ?? "")}
+                  onBlur={field.onBlur}
+                  state={fieldState.error ? "error" : "default"}
+                />
+              )}
+            />
             {errors.documento ? (
               <ErrorMessage>{errors.documento.message}</ErrorMessage>
             ) : (
-              <HelperText>Sin puntos. Ejemplo: 12345678</HelperText>
+              <HelperText>Sin puntos. Ejemplo: 12.345.678</HelperText>
             )}
           </FormField>
 
           <FormField id="cuil" state={errors.cuil ? "error" : "default"}>
             <Label>CUIL</Label>
-            <Input {...register("cuil")} placeholder="20-12345678-0" />
+            <Controller
+              name="cuil"
+              control={control}
+              render={({ field, fieldState }) => (
+                <CuitInput
+                  value={field.value || undefined}
+                  onChange={(v) => field.onChange(v ?? "")}
+                  onBlur={field.onBlur}
+                  state={fieldState.error ? "error" : "default"}
+                />
+              )}
+            />
             {errors.cuil ? (
               <ErrorMessage>{errors.cuil.message}</ErrorMessage>
             ) : (
-              <HelperText>Con o sin guiones. Ej: 20-12345678-0</HelperText>
+              <HelperText>Con guiones automáticos. Ej: 20-12345678-0</HelperText>
             )}
           </FormField>
         </CardContent>
