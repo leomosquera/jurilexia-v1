@@ -27,7 +27,18 @@ export const provinciaRepository = {
       .select("id, nombre, codigo_iso, codigo_afip")
       .order("nombre", { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return data ?? [];
+      if (error) throw new Error(error.message);
+
+      const provincias = data ?? [];
+      
+      const caba = provincias.find(
+        (p) => p.nombre === "Ciudad Autónoma de Buenos Aires"
+      );
+      
+      const resto = provincias.filter(
+        (p) => p.nombre !== "Ciudad Autónoma de Buenos Aires"
+      );
+      
+      return caba ? [caba, ...resto] : resto;
   },
 };

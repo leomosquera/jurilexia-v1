@@ -229,8 +229,17 @@ export function DomicilioSidePanel({
     setValue("codigo_postal", "");
     setLoadingCodigosPostales(true);
     getCodigosPostales(localidad.id)
-      .then(setCodigosPostales)
-      .catch(() => setCodigosPostales([]))
+      .then((cps) => {
+        setCodigosPostales(cps);
+
+        if (cps.length > 0) {
+          setValue("codigo_postal", cps[0].codigo_postal);
+        }
+      })
+      .catch(() => {
+        setCodigosPostales([]);
+        setValue("codigo_postal", "");
+      })
       .finally(() => setLoadingCodigosPostales(false));
   }
 
