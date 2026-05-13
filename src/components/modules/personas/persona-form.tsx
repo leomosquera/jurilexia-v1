@@ -62,16 +62,34 @@ const DEFAULT_VALUES: FormValues = {
   fecha_nacimiento: "",
 };
 
+type PersonaSubmitPayload = {
+  tipo: string;
+  nombre: string;
+  apellido?: string | null;
+  documento?: string | null;
+  cuil?: string | null;
+  cuit?: string | null;
+  sexo?: string | null;
+  fecha_nacimiento?: string | null;
+  contactos?: LocalContacto[];
+  domicilios?: LocalDomicilio[];
+};
+
+type PersonaFormExtras = {
+  onSuccess?: () => void;
+  /** Overrides the default createPersona / updatePersona API call. */
+  submitAction?: (payload: PersonaSubmitPayload) => Promise<void>;
+  /** Href for the "Volver" button. Defaults to "/personas". */
+  backHref?: string;
+  /** Submit button label. Defaults to "Crear persona" / "Guardar cambios". */
+  submitLabel?: string;
+  /** Toast message on success. Defaults to "Persona creada" / "Persona actualizada". */
+  successMessage?: string;
+};
+
 type Props =
-  | {
-      mode: "create";
-      onSuccess?: () => void;
-    }
-  | {
-      mode: "edit";
-      id: string;
-      onSuccess?: () => void;
-    };
+  | ({ mode: "create" } & PersonaFormExtras)
+  | ({ mode: "edit"; id: string } & PersonaFormExtras);
 
 export function PersonaForm(props: Props) {
   const { toast } = useToast();
@@ -151,10 +169,12 @@ export function PersonaForm(props: Props) {
   async function onSubmit(data: CreatePersonaInput) {
     setIsPending(true);
 
+    const back = props.backHref ?? "/personas";
+
     try {
       const isHumanaSubmit = data.tipo === "humana";
 
-      const payload = {
+      const payload: PersonaSubmitPayload = {
         tipo: data.tipo,
         nombre: data.nombre!,
         apellido: isHumanaSubmit ? (data.apellido ?? null) : null,
@@ -166,34 +186,41 @@ export function PersonaForm(props: Props) {
       };
 
       if (!isEdit) {
-        await createPersona({
-          ...payload,
-          contactos: localContactos,
-          domicilios: localDomicilios,
-        });
-      
-        toast.success("Persona creada");
-      
+        const fullPayload = { ...payload, contactos: localContactos, domicilios: localDomicilios };
+
+        if (props.submitAction) {
+          await props.submitAction(fullPayload);
+        } else {
+          await createPersona(fullPayload);
+        }
+
+        toast.success(props.successMessage ?? "Persona creada");
+
         if (props.onSuccess) {
           props.onSuccess();
           return;
         }
-      
-        router.replace("/personas");
+
+        router.replace(back);
         return;
       }
 
       const id = (props as { mode: "edit"; id: string }).id;
-      await updatePersona(id, payload);
 
-      toast.success("Persona actualizada");
+      if (props.submitAction) {
+        await props.submitAction(payload);
+      } else {
+        await updatePersona(id, payload);
+      }
+
+      toast.success(props.successMessage ?? "Persona actualizada");
 
       if (props.onSuccess) {
         props.onSuccess();
         return;
       }
 
-      router.replace("/personas");
+      router.replace(back);
     } catch (err: unknown) {
       if (err instanceof PersonaApiError) {
         setError(err.field as keyof FormValues, { message: err.message });
@@ -458,13 +485,13 @@ export function PersonaForm(props: Props) {
         <Button
           type="button"
           variant="secondary"
-          onClick={() => router.push("/personas")}
+          onClick={() => router.push(props.backHref ?? "/personas")}
         >
           Volver
         </Button>
 
         <Button type="submit" loading={isPending}>
-          {isEdit ? "Guardar cambios" : "Crear persona"}
+          {props.submitLabel ?? (isEdit ? "Guardar cambios" : "Crear persona")}
         </Button>
       </div>
 

@@ -1,3 +1,13 @@
+import { PersonaApiError } from "./personas";
+
+async function parseErrorResponse(res: Response, fallback: string): Promise<never> {
+  const body = await res.json().catch(() => ({}));
+  if (body.field && body.code && body.message) {
+    throw new PersonaApiError(body.message, body.field, body.code);
+  }
+  throw new Error(body.error || fallback);
+}
+
 // ─────────────────────────────
 // GET cliente
 // ─────────────────────────────
@@ -16,9 +26,36 @@ export async function getCliente(id: string) {
 // CREATE cliente
 // ─────────────────────────────
 export async function createCliente(payload: {
+  tipo: string;
   nombre: string;
-  apellido: string;
-  email: string;
+  apellido?: string | null;
+  documento?: string | null;
+  cuil?: string | null;
+  cuit?: string | null;
+  sexo?: string | null;
+  fecha_nacimiento?: string | null;
+  contactos?: Array<{
+    canal: string;
+    categoria: string;
+    valor: string;
+    descripcion?: string | null;
+    predeterminado: boolean;
+    verificado: boolean;
+    pais_codigo: string;
+  }>;
+  domicilios?: Array<{
+    categoria: string;
+    calle: string;
+    numero?: string | null;
+    piso?: string | null;
+    departamento?: string | null;
+    barrio?: string | null;
+    localidad_id?: string | null;
+    codigo_postal?: string | null;
+    descripcion?: string | null;
+    predeterminado: boolean;
+    activo: boolean;
+  }>;
 }) {
   const res = await fetch("/api/clientes", {
     method: "POST",
@@ -26,8 +63,7 @@ export async function createCliente(payload: {
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || "Error al crear cliente");
+    await parseErrorResponse(res, "Error al crear cliente");
   }
 
   return res.json();
@@ -39,9 +75,14 @@ export async function createCliente(payload: {
 export async function updateCliente(
   id: string,
   payload: {
+    tipo: string;
     nombre: string;
-    apellido: string;
-    email: string;
+    apellido?: string | null;
+    documento?: string | null;
+    cuil?: string | null;
+    cuit?: string | null;
+    sexo?: string | null;
+    fecha_nacimiento?: string | null;
   }
 ) {
   const res = await fetch(`/api/clientes/${id}`, {
@@ -50,8 +91,7 @@ export async function updateCliente(
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error || "Error al actualizar cliente");
+    await parseErrorResponse(res, "Error al actualizar cliente");
   }
 }
 

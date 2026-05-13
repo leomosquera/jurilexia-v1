@@ -39,7 +39,7 @@ import { TIPO_LABELS, type TipoPersona } from "@/lib/validation/schemas/persona.
 // Types
 // ─────────────────────────────────────────────────────────────
 
-type Persona = {
+export type Persona = {
   id: string;
   tipo: string;
   nombre: string | null;
@@ -49,6 +49,26 @@ type Persona = {
   cuit: string | null;
   email_principal: string | null;
   telefono_principal: string | null;
+};
+
+export type EntityTableConfig = {
+  basePath: string;
+  createLabel: string;
+  emptyLabel: string;
+  deleteTitle: string;
+  deleteDescription: string;
+  deleteSuccessMessage: string;
+  onDelete: (id: string) => Promise<void>;
+};
+
+const DEFAULT_CONFIG: EntityTableConfig = {
+  basePath: "/personas",
+  createLabel: "Nueva Persona",
+  emptyLabel: "No hay personas registradas",
+  deleteTitle: "Eliminar persona",
+  deleteDescription: "¿Estás seguro que querés eliminar esta persona?",
+  deleteSuccessMessage: "Persona eliminada",
+  onDelete: deletePersona,
 };
 
 type ColKey = "documento" | "cuil" | "cuit" | "email_principal" | "telefono_principal";
@@ -95,9 +115,11 @@ function ColumnsIcon() {
 
 type Props = {
   personas: Persona[];
+  config?: EntityTableConfig;
 };
 
-export function PersonasTable({ personas }: Props) {
+export function PersonasTable({ personas, config: configProp }: Props) {
+  const config = configProp ?? DEFAULT_CONFIG;
   const { toast } = useToast();
 
   const router = useRouter();
@@ -268,9 +290,9 @@ export function PersonasTable({ personas }: Props) {
 
     startTransition(async () => {
       try {
-        await deletePersona(pendingId);
+        await config.onDelete(pendingId);
 
-        toast.success("Persona eliminada");
+        toast.success(config.deleteSuccessMessage);
 
         setPendingId(null);
 
@@ -295,8 +317,8 @@ export function PersonasTable({ personas }: Props) {
         onClose={handleCancel}
         onConfirm={handleConfirm}
         loading={isPending}
-        title="Eliminar persona"
-        description="¿Estás seguro que querés eliminar esta persona?"
+        title={config.deleteTitle}
+        description={config.deleteDescription}
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
       />
@@ -370,9 +392,9 @@ export function PersonasTable({ personas }: Props) {
 
               <div className="ml-auto" />
 
-              <Link href="/personas/crear">
+              <Link href={`${config.basePath}/crear`}>
                 <Button>
-                  Nueva Persona
+                  {config.createLabel}
                 </Button>
               </Link>
             </>
@@ -474,7 +496,7 @@ export function PersonasTable({ personas }: Props) {
                 >
                   {query
                     ? `Sin resultados para "${query}"`
-                    : "No hay personas registradas"}
+                    : config.emptyLabel}
                 </td>
               </tr>
             ) : (
@@ -548,7 +570,7 @@ export function PersonasTable({ personas }: Props) {
                     <div className="flex items-center justify-end gap-0.5">
 
                     <Link
-                      href={`/personas/${p.id}`}
+                      href={`${config.basePath}/${p.id}`}
                       aria-label="Editar"
                       className="flex size-6 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
                     >

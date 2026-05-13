@@ -7,9 +7,8 @@ export const clienteRepository = {
       .select(`
         id,
         persona:persona_id!inner (
-          nombre,
-          apellido,
-          email
+          tipo, nombre, apellido, documento, cuil, cuit,
+          persona_contacto(id, canal, valor, predeterminado, deleted_at)
         )
       `)
       .filter("deleted_at", "is", null)
@@ -22,21 +21,10 @@ export const clienteRepository = {
       .select(`
         id,
         persona:persona_id (
-          id,
-          nombre,
-          apellido,
-          email
+          id, tipo, nombre, apellido
         )
       `)
       .eq("id", id)
-      .single();
-  },
-
-  async insertPersona(ctx: any, payload: any) {
-    return ctx.supabase
-      .from("persona")
-      .insert(payload)
-      .select()
       .single();
   },
 
@@ -44,13 +32,6 @@ export const clienteRepository = {
     return ctx.supabase
       .from("cliente")
       .insert(payload);
-  },
-
-  async updatePersona(ctx: any, id: string, payload: any) {
-    return ctx.supabase
-      .from("persona")
-      .update(payload)
-      .eq("id", id);
   },
 
   async getPersonaId(ctx: any, clienteId: string) {

@@ -97,7 +97,7 @@ function translateUniqueError(message: string): PersonaFieldError | Error {
   return new Error(message);
 }
 
-type RawContacto = {
+export type RawContacto = {
   id: string;
   canal: string;
   valor: string;
@@ -105,7 +105,7 @@ type RawContacto = {
   deleted_at: string | null;
 };
 
-function extractPrincipal(contactos: RawContacto[], canal: string): string | null {
+export function extractPrincipal(contactos: RawContacto[], canal: string): string | null {
   const active = contactos.filter((c) => !c.deleted_at && c.canal === canal);
   return active.find((c) => c.predeterminado)?.valor ?? active[0]?.valor ?? null;
 }

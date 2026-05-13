@@ -1,10 +1,26 @@
 import { clienteRepository } from "../repositories/cliente.repository";
+import { personaService, extractPrincipal, type RawContacto } from "./persona.service";
 
 export const clienteService = {
   async getAll(ctx: any) {
     const { data, error } = await clienteRepository.getAll(ctx);
     if (error) throw new Error(error.message);
-    return data ?? [];
+
+    return (data ?? []).map((c: any) => {
+      const persona = c.persona;
+      const contactos: RawContacto[] = persona?.persona_contacto ?? [];
+      return {
+        id: c.id,
+        tipo: persona?.tipo,
+        nombre: persona?.nombre,
+        apellido: persona?.apellido,
+        documento: persona?.documento,
+        cuil: persona?.cuil,
+        cuit: persona?.cuit,
+        email_principal: extractPrincipal(contactos, "email"),
+        telefono_principal: extractPrincipal(contactos, "telefono"),
+      };
+    });
   },
 
   async getById(ctx: any, id: string) {
@@ -14,23 +30,17 @@ export const clienteService = {
   },
 
   async create(ctx: any, payload: any) {
-    const { data: persona, error: personaError } =
-      await clienteRepository.insertPersona(ctx, {
-        tenant_id: ctx.tenant_id,
-        ...payload,
-      });
+    // Delega toda la lógica de persona (tipo, uniqueness, contactos, domicilios)
+    const persona = await personaService.create(ctx, payload);
 
-    if (personaError) throw personaError;
-
-    const { error: clienteError } =
-      await clienteRepository.insertCliente(ctx, {
-        tenant_id: ctx.tenant_id,
-        persona_id: persona.id,
-      });
+    const { error: clienteError } = await clienteRepository.insertCliente(ctx, {
+      tenant_id: ctx.tenant_id,
+      persona_id: persona.id,
+    });
 
     if (clienteError) throw clienteError;
 
-    return { success: true };
+    return { success: true, persona_id: persona.id };
   },
 
   async update(ctx: any, id: string, payload: any) {
@@ -39,13 +49,8 @@ export const clienteService = {
 
     if (clienteError) throw clienteError;
 
-    const { error } = await clienteRepository.updatePersona(
-      ctx,
-      cliente.persona_id,
-      payload
-    );
-
-    if (error) throw error;
+    // Delega toda la lógica de persona (tipo, uniqueness, strip)
+    await personaService.update(ctx, cliente.persona_id, payload);
 
     return { success: true };
   },
