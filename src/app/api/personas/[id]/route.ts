@@ -1,5 +1,6 @@
 import { getServerContext } from "@/lib/server/context/getServerContext";
-import { personaService } from "@/lib/server/services/persona.service";
+import { personaService, PersonaFieldError } from "@/lib/server/services/persona.service";
+import { updatePersonaSchema } from "@/lib/validation/schemas/persona.schema";
 
 export async function GET(
   _req: Request,
@@ -29,10 +30,25 @@ export async function PUT(
     const body = await req.json();
     const { id } = await params;
 
-    await personaService.update(ctx, id, body);
+    const parsed = updatePersonaSchema.safeParse(body);
+    if (!parsed.success) {
+      const issue = parsed.error.issues[0];
+      return Response.json(
+        { error: issue?.message ?? "Datos inválidos" },
+        { status: 400 }
+      );
+    }
+
+    await personaService.update(ctx, id, parsed.data);
 
     return Response.json({ success: true });
   } catch (error: any) {
+    if (error instanceof PersonaFieldError) {
+      return Response.json(
+        { code: error.code, field: error.field, message: error.message },
+        { status: 409 }
+      );
+    }
     return Response.json(
       { error: error.message ?? "Error interno" },
       { status: 500 }

@@ -1,13 +1,21 @@
 import { z } from "zod";
-import { PERSON_NAME_REGEX, DNI_REGEX, CUIL_REGEX } from "../common/patterns";
+import { PERSON_NAME_REGEX, RAZON_SOCIAL_REGEX, DNI_REGEX, CUIL_REGEX } from "../common/patterns";
 import { MESSAGES } from "../common/messages";
-import { normalizeDNI, normalizeCUIL, normalizePhone, parseFechaNacimiento } from "../common/parsers";
+import { normalizeDNI, normalizeCUIL, parseFechaNacimiento, validateCUILChecksum } from "../common/parsers";
 
-// Converts empty / whitespace-only strings to undefined so optional fields
-// can be left blank in forms without triggering validation errors.
 function emptyToUndefined(v: unknown): unknown {
   return typeof v === "string" && v.trim() === "" ? undefined : v;
 }
+
+// ── Tipo ──────────────────────────────────────────────────────────────────────
+
+export const TIPOS = ["humana", "juridica"] as const;
+export type TipoPersona = (typeof TIPOS)[number];
+
+export const TIPO_LABELS: Record<TipoPersona, string> = {
+  humana: "Humana",
+  juridica: "Jurídica",
+};
 
 // ── Sexo ──────────────────────────────────────────────────────────────────────
 
@@ -21,41 +29,115 @@ export const SEXO_LABELS: Record<Sexo, string> = {
   no_especificado: "No especificado",
 };
 
-// ── createPersonaSchema ───────────────────────────────────────────────────────
+// ── Refinement condicional ────────────────────────────────────────────────────
+// Aplica reglas required según tipo. Se reutiliza en create y update.
 
-export const createPersonaSchema = z.object({
+function conditionalPersonaRules(
+  data: {
+    tipo?: string;
+    nombre?: string;
+    apellido?: string;
+    documento?: string;
+    cuit?: string;
+  },
+  ctx: z.RefinementCtx
+) {
+  if (!data.tipo) return;
+
+  if (data.tipo === "humana") {
+    // nombre: strict — no digits, only letters/spaces/accents/apostrophe/hyphen
+    if (data.nombre && !PERSON_NAME_REGEX.test(data.nombre)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: MESSAGES.invalidName,
+        path: ["nombre"],
+      });
+    }
+    if (!data.apellido?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: MESSAGES.required,
+        path: ["apellido"],
+      });
+    }
+    if (!data.documento) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: MESSAGES.required,
+        path: ["documento"],
+      });
+    }
+  }
+
+  if (data.tipo === "juridica") {
+    // nombre: permissive — allows digits, dot, ampersand, slash, parentheses
+    if (data.nombre && !RAZON_SOCIAL_REGEX.test(data.nombre)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: MESSAGES.invalidRazonSocial,
+        path: ["nombre"],
+      });
+    }
+    if (!data.cuit) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: MESSAGES.required,
+        path: ["cuit"],
+      });
+    }
+  }
+}
+
+// ── Base fields ───────────────────────────────────────────────────────────────
+
+const basePersonaFields = {
+  tipo: z.enum(TIPOS),
+
+  // Regex applied conditionally in superRefine: PERSON_NAME_REGEX for humana,
+  // RAZON_SOCIAL_REGEX for juridica.
   nombre: z
     .string()
     .min(1, MESSAGES.required)
-    .max(100, MESSAGES.maxLength(100))
-    .regex(PERSON_NAME_REGEX, MESSAGES.invalidName),
+    .max(100, MESSAGES.maxLength(100)),
 
-  apellido: z
-    .string()
-    .min(1, MESSAGES.required)
-    .max(100, MESSAGES.maxLength(100))
-    .regex(PERSON_NAME_REGEX, MESSAGES.invalidName),
+  // Optional at field level; conditionally required via superRefine for "humana"
+  apellido: z.preprocess(
+    emptyToUndefined,
+    z
+      .string()
+      .max(100, MESSAGES.maxLength(100))
+      .regex(PERSON_NAME_REGEX, MESSAGES.invalidName)
+      .optional()
+  ),
 
-  // Strips dots → validates digit count
+  // Strips dots → validates digit count. Conditionally required for "humana".
   documento: z.preprocess(
     (v) => (typeof v === "string" && v.trim() ? normalizeDNI(v) : undefined),
     z.string().regex(DNI_REGEX, MESSAGES.invalidDNI).optional()
   ),
 
-  // Strips dashes → validates prefix + digit count
+  // Strips dashes → validates prefix + digit count + checksum. Optional for "humana".
   cuil: z.preprocess(
     (v) => (typeof v === "string" && v.trim() ? normalizeCUIL(v) : undefined),
-    z.string().regex(CUIL_REGEX, MESSAGES.invalidCUIL).optional()
+    z
+      .string()
+      .regex(CUIL_REGEX, MESSAGES.invalidCUIL)
+      .refine(validateCUILChecksum, MESSAGES.invalidCUILChecksum)
+      .optional()
   ),
 
-  sexo: z.preprocess(
-    emptyToUndefined,
-    z.enum(SEXOS).optional()
+  // CUIT for "juridica". Same format as CUIL + checksum; conditionally required.
+  cuit: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() ? normalizeCUIL(v) : undefined),
+    z
+      .string()
+      .regex(CUIL_REGEX, MESSAGES.invalidCUIT)
+      .refine(validateCUILChecksum, MESSAGES.invalidCUITChecksum)
+      .optional()
   ),
 
-  // Accepts "dd/mm/aaaa" → normalizes to "YYYY-MM-DD" for persistence.
-  // parseFechaNacimiento returns the raw value when the format is invalid,
-  // which will then fail the ISO regex and surface a user-facing error.
+  sexo: z.preprocess(emptyToUndefined, z.enum(SEXOS).optional()),
+
   fecha_nacimiento: z.preprocess(
     (v) => (typeof v === "string" && v.trim() ? parseFechaNacimiento(v) : undefined),
     z
@@ -71,13 +153,23 @@ export const createPersonaSchema = z.object({
       )
       .optional()
   ),
-});
+};
+
+// ── createPersonaSchema ───────────────────────────────────────────────────────
+
+export const createPersonaSchema = z
+  .object(basePersonaFields)
+  .superRefine(conditionalPersonaRules);
 
 export type CreatePersonaInput = z.infer<typeof createPersonaSchema>;
 
 // ── updatePersonaSchema ───────────────────────────────────────────────────────
-// All fields are optional — send only the fields you want to update.
+// All fields optional for partial updates; same conditional rules apply when
+// tipo is present (edit form always sends all fields).
 
-export const updatePersonaSchema = createPersonaSchema.partial();
+export const updatePersonaSchema = z
+  .object(basePersonaFields)
+  .partial()
+  .superRefine(conditionalPersonaRules);
 
 export type UpdatePersonaInput = z.infer<typeof updatePersonaSchema>;

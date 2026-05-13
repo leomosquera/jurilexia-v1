@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Select } from "@/components/ui/select";
+import { PhoneCountrySelect } from "./PhoneCountrySelect";
 import { InputGroup, InputAffix } from "@/components/ui/input-group";
 import {
   FormField,
@@ -49,11 +50,6 @@ type Props = {
 
 const CANAL_OPTIONS = CANALES.map((c) => ({ value: c, label: CANAL_LABELS[c] }));
 const CATEGORIA_OPTIONS = CATEGORIAS.map((c) => ({ value: c, label: CATEGORIA_LABELS[c] }));
-
-// Phone country code options — expand as needed
-const PAIS_CODIGO_OPTIONS = [
-  { value: "AR", label: "🇦🇷 +54" },
-];
 
 const CANAL_PLACEHOLDERS: Record<string, string> = {
   email: "nombre@ejemplo.com",
@@ -124,6 +120,7 @@ export function ContactoSidePanel({
 
   async function handleFormSubmit(data: ContactoInput) {
     await onSubmit(data);
+    onClose();
   }
 
   return (
@@ -142,7 +139,7 @@ export function ContactoSidePanel({
       <SidePanelContent>
         <form
           id="contacto-form"
-          onSubmit={handleSubmit(handleFormSubmit)}
+          onSubmit={(e) => { e.stopPropagation(); handleSubmit(handleFormSubmit)(e); }}
           className="space-y-4"
         >
           {/* Canal */}
@@ -200,28 +197,30 @@ export function ContactoSidePanel({
             </Label>
 
             {canal === "telefono" || canal === "whatsapp" ? (
-              <InputGroup state={errors.valor ? "error" : "default"}>
-                <InputAffix side="left" interactive>
-                  <Controller
-                    name="pais_codigo"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        id="pais_codigo-select"
-                        options={PAIS_CODIGO_OPTIONS}
-                        value={field.value}
-                        onChange={field.onChange}
-                      />
-                    )}
-                  />
-                </InputAffix>
+            <div className="flex w-full">
+              <div className="w-[7rem] shrink-0">
+                <Controller
+                  name="pais_codigo"
+                  control={control}
+                  render={({ field }) => (
+                    <PhoneCountrySelect
+                      value={field.value ?? "AR"}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+            
+              <div className="flex-1">
                 <Input
                   {...register("valor")}
                   inputMode="numeric"
                   maxLength={12}
                   placeholder="1131716941"
+                  className="w-full rounded-l-none border-l-0"
                 />
-              </InputGroup>
+              </div>
+            </div>
             ) : (
               <Input
                 {...register("valor")}

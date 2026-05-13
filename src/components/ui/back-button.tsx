@@ -19,13 +19,26 @@ function ArrowLeftIcon() {
   );
 }
 
-export function BackButton() {
+type Props = {
+  href?: string;
+};
+
+export function BackButton({ href }: Props) {
   const router = useRouter();
+
+  function handleClick() {
+    if (href) {
+      router.push(href);
+      return;
+    }
+
+    router.back();
+  }
 
   return (
     <button
       type="button"
-      onClick={() => router.back()}
+      onClick={handleClick}
       aria-label="Volver"
       className="
         inline-flex

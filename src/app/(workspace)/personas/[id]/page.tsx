@@ -17,7 +17,8 @@ export default async function EditarPersonaPage({ params }: Props) {
       <div className="space-y-8">
 
         <PageHeader
-          back
+          back 
+          backHref="/personas"
           title="Editar Persona"
           breadcrumb={[
             { label: "Personas", href: "/personas" },

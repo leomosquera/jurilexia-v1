@@ -1,10 +1,17 @@
 /**
- * Regex for personal names.
+ * Regex for personal names (persona humana).
  * Supports: accented chars, Unicode letters, combining marks, apostrophes,
- * typographic single quotes, hyphens, and spaces.
+ * typographic single quotes, hyphens, and spaces. No digits.
  * Valid: José, João, D'Nardo, O'Connor, Jean-Pierre, Müller.
  */
 export const PERSON_NAME_REGEX = /^[\p{L}\p{M}'\u2019\-\s]+$/u;
+
+/**
+ * Regex for company names (persona jurídica / razón social).
+ * Extends PERSON_NAME_REGEX with digits, dot, ampersand, slash, parentheses.
+ * Valid: Acme S.A., Smith & Co., Grupo 3/15 (Arg), Constructora del Sur S.R.L.
+ */
+export const RAZON_SOCIAL_REGEX = /^[\p{L}\p{M}'\u2019\-\s0-9\.&\/()]+$/u;
 
 /**
  * Normalized DNI (Argentine): 7 or 8 digits, no dots.

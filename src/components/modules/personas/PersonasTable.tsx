@@ -33,6 +33,7 @@ import { useToast } from "@/components/ui/toast";
 import { IconChevronDown } from "@/components/ui/icons";
 
 import { deletePersona } from "@/lib/api/personas";
+import { TIPO_LABELS, type TipoPersona } from "@/lib/validation/schemas/persona.schema";
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -40,24 +41,27 @@ import { deletePersona } from "@/lib/api/personas";
 
 type Persona = {
   id: string;
+  tipo: string;
   nombre: string | null;
   apellido: string | null;
   documento: string | null;
   cuil: string | null;
+  cuit: string | null;
   email_principal: string | null;
   telefono_principal: string | null;
 };
 
-type ColKey = "documento" | "cuil" | "email_principal" | "telefono_principal";
+type ColKey = "documento" | "cuil" | "cuit" | "email_principal" | "telefono_principal";
 
 const COL_LABELS: Record<ColKey, string> = {
   documento: "Documento",
   cuil: "CUIL",
+  cuit: "CUIT",
   email_principal: "Email",
   telefono_principal: "Teléfono",
 };
 
-const ALL_COLS = ["email_principal", "telefono_principal", "documento", "cuil"] as ColKey[];
+const ALL_COLS = ["email_principal", "telefono_principal", "documento", "cuil", "cuit"] as ColKey[];
 
 type SortKey = "nombre" | "documento";
 
@@ -124,6 +128,7 @@ export function PersonasTable({ personas }: Props) {
     telefono_principal: true,
     documento: true,
     cuil: false,
+    cuit: false,
   });
 
   const toggleCol = (key: ColKey) =>
@@ -146,7 +151,7 @@ export function PersonasTable({ personas }: Props) {
     const q = query.toLowerCase();
 
     return personas.filter((p) =>
-      [p.nombre, p.apellido, p.documento, p.cuil, p.email_principal, p.telefono_principal].some(
+      [p.nombre, p.apellido, p.documento, p.cuil, p.cuit, p.email_principal, p.telefono_principal].some(
         (v) => v?.toLowerCase().includes(q),
       ),
     );
@@ -280,8 +285,8 @@ export function PersonasTable({ personas }: Props) {
     });
   }
 
-  // checkbox + nombre + visible cols + acciones
-  const totalCols = 1 + 1 + visibleColCount + 1;
+  // checkbox + nombre + tipo + visible cols + acciones
+  const totalCols = 1 + 1 + 1 + visibleColCount + 1;
 
   return (
     <>
@@ -405,6 +410,10 @@ export function PersonasTable({ personas }: Props) {
                 Nombre
               </TableCell>
 
+              <TableCell isHeader>
+                Tipo
+              </TableCell>
+
               {colVisible.email_principal && (
                 <TableCell isHeader>
                   Email
@@ -437,6 +446,12 @@ export function PersonasTable({ personas }: Props) {
               {colVisible.cuil && (
                 <TableCell isHeader>
                   CUIL
+                </TableCell>
+              )}
+
+              {colVisible.cuit && (
+                <TableCell isHeader>
+                  CUIT
                 </TableCell>
               )}
 
@@ -485,11 +500,15 @@ export function PersonasTable({ personas }: Props) {
                   </TableCell>
 
                   <TableCell>
-                    <span className="font-medium text-zinc-900">
-                      {[p.nombre, p.apellido]
-                        .filter(Boolean)
-                        .join(" ") || "—"}
+                    <span className="font-medium text-zinc-900 sm:whitespace-nowrap">
+                      {p.tipo === "juridica"
+                        ? (p.nombre || "—")
+                        : ([p.nombre, p.apellido].filter(Boolean).join(" ") || "—")}
                     </span>
+                  </TableCell>
+
+                  <TableCell className="text-zinc-500">
+                    {TIPO_LABELS[p.tipo as TipoPersona] ?? p.tipo}
                   </TableCell>
 
                   {colVisible.email_principal && (
@@ -513,6 +532,12 @@ export function PersonasTable({ personas }: Props) {
                   {colVisible.cuil && (
                     <TableCell className="text-zinc-500">
                       {p.cuil ?? "—"}
+                    </TableCell>
+                  )}
+
+                  {colVisible.cuit && (
+                    <TableCell className="text-zinc-500">
+                      {p.cuit ?? "—"}
                     </TableCell>
                   )}
 

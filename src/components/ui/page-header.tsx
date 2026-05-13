@@ -7,6 +7,7 @@ type Props = {
   breadcrumb?: BreadcrumbItem[];
   actions?: ReactNode;
   back?: boolean;
+  backHref?: string;
 };
 
 export function PageHeader({

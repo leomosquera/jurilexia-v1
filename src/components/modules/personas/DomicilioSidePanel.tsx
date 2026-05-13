@@ -31,6 +31,7 @@ import {
   CATEGORIA_DOMICILIO_LABELS,
   type DomicilioInput,
 } from "@/lib/validation/schemas/persona-domicilio.schema";
+import { MESSAGES } from "@/lib/validation/common/messages";
 import { getProvincias, type Provincia } from "@/lib/api/provincias";
 import { searchLocalidades, type Localidad } from "@/lib/api/localidades";
 import { getCodigosPostales, type CodigoPostal } from "@/lib/api/codigos-postales";
@@ -76,6 +77,7 @@ export function DomicilioSidePanel({
     reset,
     setValue,
     watch,
+    setError,
     formState: { errors },
   } = useForm<
     z.input<typeof domicilioSchema>,
@@ -105,6 +107,7 @@ export function DomicilioSidePanel({
 
   const [provincias, setProvincias] = useState<Provincia[]>([]);
   const [provinciaId, setProvinciaId] = useState("");
+  const [provinciaError, setProvinciaError] = useState(false);
 
   // Localidad async search
   const [localidadSearch, setLocalidadSearch] = useState("");
@@ -137,6 +140,7 @@ export function DomicilioSidePanel({
     const initLocalidadId = initialValues?.localidad_id ?? "";
 
     setProvinciaId(initProvinciaId);
+    setProvinciaError(false);
     skipNextSearchRef.current = true;
     setLocalidadSearch(initLocalidadNombre);
     setLocalidadResults([]);
@@ -208,6 +212,7 @@ export function DomicilioSidePanel({
 
   function handleProvinciaChange(val: string) {
     setProvinciaId(val);
+    setProvinciaError(false);
     setLocalidadSearch("");
     setLocalidadResults([]);
     setShowLocalidadDropdown(false);
@@ -242,7 +247,16 @@ export function DomicilioSidePanel({
   // ── Submit ────────────────────────────────────────────────────────────────
 
   async function handleFormSubmit(data: DomicilioInput) {
+    if (!provinciaId) {
+      setProvinciaError(true);
+      return;
+    }
+    if (codigosPostales.length > 0 && !data.codigo_postal) {
+      setError("codigo_postal", { message: MESSAGES.required });
+      return;
+    }
     await onSubmit(data);
+    onClose();
   }
 
   // ── Derived options ───────────────────────────────────────────────────────
@@ -268,7 +282,7 @@ export function DomicilioSidePanel({
       <SidePanelContent>
         <form
           id="domicilio-form"
-          onSubmit={handleSubmit(handleFormSubmit)}
+          onSubmit={(e) => { e.stopPropagation(); handleSubmit(handleFormSubmit)(e); }}
           className="space-y-4"
         >
           {/* Categoría */}
@@ -308,7 +322,7 @@ export function DomicilioSidePanel({
           {/* Número / Piso / Departamento */}
           <div className="grid grid-cols-3 gap-3">
             <FormField id="numero" state={errors.numero ? "error" : "default"}>
-              <Label>Número</Label>
+              <Label required>Número</Label>
               <Input
                 {...register("numero")}
                 placeholder="1234"
@@ -345,20 +359,24 @@ export function DomicilioSidePanel({
           </div>
 
           {/* Provincia — local state, not persisted */}
-          <FormField id="provincia" state="default">
-            <Label>Provincia</Label>
+          <FormField id="provincia" state={provinciaError ? "error" : "default"}>
+            <Label required>Provincia</Label>
             <Select
               options={provinciaOptions}
               value={provinciaId}
               onChange={handleProvinciaChange}
               placeholder="Seleccionar provincia…"
               disabled={provincias.length === 0}
+              state={provinciaError ? "error" : "default"}
             />
+            {provinciaError && (
+              <ErrorMessage>{MESSAGES.required}</ErrorMessage>
+            )}
           </FormField>
 
           {/* Localidad — async server-side search */}
           <FormField id="localidad_id" state={errors.localidad_id ? "error" : "default"}>
-            <Label>Localidad</Label>
+            <Label required>Localidad</Label>
             {/* Hidden field keeps RHF in sync */}
             <input type="hidden" {...register("localidad_id")} />
             <div className="relative">

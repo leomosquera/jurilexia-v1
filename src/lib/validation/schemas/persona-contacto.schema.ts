@@ -29,7 +29,7 @@ export const CATEGORIA_LABELS: Record<Categoria, string> = {
 const baseContactoSchema = z.object({
   canal: z.enum(CANALES),
   categoria: z.enum(CATEGORIAS),
-  valor: z.string().max(255),
+  valor: z.string().min(1, MESSAGES.required).max(255),
   descripcion: z.string().max(255).optional(),
   predeterminado: z.boolean().default(false),
   verificado: z.boolean().default(false),
@@ -41,7 +41,7 @@ const baseContactoSchema = z.object({
 export const contactoSchema = baseContactoSchema.superRefine((data, ctx) => {
   const { canal, valor, pais_codigo } = data;
 
-  if (!valor) return; // min(1) already caught this
+  if (!valor) return;
 
   if (canal === "email") {
     const result = z.string().email().safeParse(valor);

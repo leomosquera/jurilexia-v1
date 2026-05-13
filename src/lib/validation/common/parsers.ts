@@ -51,6 +51,39 @@ export function parseFechaNacimiento(value: string): string {
 }
 
 /**
+ * Validates the Argentine CUIL/CUIT check digit (dígito verificador).
+ *
+ * Expects a normalized 11-digit string (no dashes). Call normalizeCUIL()
+ * before invoking this function.
+ *
+ * Algorithm (AFIP standard):
+ *   multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+ *   sum         = Σ digit[i] × multiplier[i]  (i = 0..9)
+ *   remainder   = sum % 11
+ *   checkDigit  = remainder === 0 ? 0
+ *               : remainder === 1 ? 9   ← AFIP edge case accepted
+ *               : 11 - remainder
+ *
+ * @param value - Normalized 11-digit CUIL/CUIT string.
+ */
+export function validateCUILChecksum(value: string): boolean {
+  if (!/^\d{11}$/.test(value)) return false;
+
+  const digits = value.split("").map(Number);
+  const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+
+  const sum = digits
+    .slice(0, 10)
+    .reduce((acc, d, i) => acc + d * multipliers[i], 0);
+
+  const remainder = sum % 11;
+  const checkDigit =
+    remainder === 0 ? 0 : remainder === 1 ? 9 : 11 - remainder;
+
+  return digits[10] === checkDigit;
+}
+
+/**
  * Normalizes a phone number to E.164 format using libphonenumber-js.
  * Falls back to the trimmed input if parsing fails or the number is invalid.
  *

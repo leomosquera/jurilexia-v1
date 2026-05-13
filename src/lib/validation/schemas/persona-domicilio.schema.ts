@@ -25,11 +25,11 @@ export const CATEGORIA_DOMICILIO_LABELS: Record<CategoriaDomicilio, string> = {
 export const domicilioSchema = z.object({
   categoria:     z.enum(CATEGORIAS_DOMICILIO),
   calle:         z.string().min(1, MESSAGES.required).max(255, MESSAGES.maxLength(255)),
-  numero:        z.preprocess(emptyToUndefined, z.string().max(20, MESSAGES.maxLength(20)).optional()),
+  numero:        z.string().min(1, MESSAGES.required).max(20, MESSAGES.maxLength(20)),
   piso:          z.preprocess(emptyToUndefined, z.string().max(10, MESSAGES.maxLength(10)).optional()),
   departamento:  z.preprocess(emptyToUndefined, z.string().max(10, MESSAGES.maxLength(10)).optional()),
   barrio:        z.preprocess(emptyToUndefined, z.string().max(100, MESSAGES.maxLength(100)).optional()),
-  localidad_id:  z.preprocess(emptyToUndefined, z.string().uuid().optional()),
+  localidad_id:  z.string().min(1, MESSAGES.required).uuid(MESSAGES.required),
   codigo_postal: z.preprocess(emptyToUndefined, z.string().max(10, MESSAGES.maxLength(10)).optional()),
   descripcion:   z.preprocess(emptyToUndefined, z.string().max(255, MESSAGES.maxLength(255)).optional()),
   predeterminado: z.boolean().default(false),

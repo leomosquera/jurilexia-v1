@@ -3,6 +3,100 @@ import { personaContactoRepository } from "../repositories/persona-contacto.repo
 import { personaDomicilioRepository } from "../repositories/persona-domicilio.repository";
 import { normalizeContactoValor } from "@/lib/validation/schemas/persona-contacto.schema";
 
+type PersonaPayload = Record<string, unknown>;
+
+/**
+ * Structured field error thrown by the service for validation failures
+ * that must be surfaced to a specific form field in the UI.
+ */
+export class PersonaFieldError extends Error {
+  constructor(
+    message: string,
+    public readonly field: string,
+    public readonly code: string
+  ) {
+    super(message);
+    this.name = "PersonaFieldError";
+  }
+}
+
+/**
+ * Strips fields that do not belong to the given tipo.
+ * Ensures humana personas never persist cuit, and juridica personas
+ * never persist apellido/documento/cuil/sexo/fecha_nacimiento.
+ */
+function stripPayloadByTipo(payload: PersonaPayload): PersonaPayload {
+  if (payload.tipo === "humana") {
+    return { ...payload, cuit: null };
+  }
+  if (payload.tipo === "juridica") {
+    return {
+      ...payload,
+      apellido: null,
+      documento: null,
+      cuil: null,
+      sexo: null,
+      fecha_nacimiento: null,
+    };
+  }
+  return payload;
+}
+
+/**
+ * Checks uniqueness of documento, cuil, and cuit within the same tenant.
+ * Pass excludeId when updating so the record does not conflict with itself.
+ */
+async function checkUniqueness(
+  ctx: unknown,
+  payload: PersonaPayload,
+  excludeId?: string
+) {
+  if (payload.documento) {
+    const dup = await personaRepository.findByDocumento(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ctx as any,
+      payload.documento as string,
+      excludeId
+    );
+    if (dup) throw new PersonaFieldError("Ya existe una persona con ese DNI.", "documento", "DUPLICATE_DOCUMENTO");
+  }
+  if (payload.cuil) {
+    const dup = await personaRepository.findByCuil(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ctx as any,
+      payload.cuil as string,
+      excludeId
+    );
+    if (dup) throw new PersonaFieldError("Ya existe una persona con ese CUIL.", "cuil", "DUPLICATE_CUIL");
+  }
+  if (payload.cuit) {
+    const dup = await personaRepository.findByCuit(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ctx as any,
+      payload.cuit as string,
+      excludeId
+    );
+    if (dup) throw new PersonaFieldError("Ya existe una persona con ese CUIT.", "cuit", "DUPLICATE_CUIT");
+  }
+}
+
+/**
+ * Translates Postgres unique-constraint violation messages to PersonaFieldError.
+ * Acts as a safety net when a race condition bypasses the service-level check.
+ */
+function translateUniqueError(message: string): PersonaFieldError | Error {
+  if (message.includes("documento")) {
+    return new PersonaFieldError("Ya existe una persona con ese DNI.", "documento", "DUPLICATE_DOCUMENTO");
+  }
+  if (message.includes("cuil")) {
+    return new PersonaFieldError("Ya existe una persona con ese CUIL.", "cuil", "DUPLICATE_CUIL");
+  }
+  if (message.includes("cuit")) {
+    return new PersonaFieldError("Ya existe una persona con ese CUIT.", "cuit", "DUPLICATE_CUIT");
+  }
+  return new Error(message);
+}
+
 type RawContacto = {
   id: string;
   canal: string;
@@ -25,10 +119,12 @@ export const personaService = {
       const contactos: RawContacto[] = p.persona_contacto ?? [];
       return {
         id: p.id,
+        tipo: p.tipo,
         nombre: p.nombre,
         apellido: p.apellido,
         documento: p.documento,
         cuil: p.cuil,
+        cuit: p.cuit,
         email_principal: extractPrincipal(contactos, "email"),
         telefono_principal: extractPrincipal(contactos, "telefono"),
       };
@@ -40,8 +136,20 @@ export const personaService = {
   },
 
   async create(ctx: any, payload: any) {
-    const { contactos, domicilios, ...personaPayload } = payload;
-    const persona = await personaRepository.create(ctx, personaPayload);
+    const { contactos, domicilios, ...rawPersona } = payload;
+    const personaPayload = stripPayloadByTipo(rawPersona as PersonaPayload);
+
+    await checkUniqueness(ctx, personaPayload);
+
+    let persona: any;
+    try {
+      persona = await personaRepository.create(ctx, personaPayload);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("unique constraint")) {
+        throw translateUniqueError(err.message);
+      }
+      throw err;
+    }
 
     // Create initial contactos if provided (create-mode local state)
     if (Array.isArray(contactos) && contactos.length > 0) {
@@ -82,7 +190,17 @@ export const personaService = {
   },
 
   async update(ctx: any, id: string, payload: any) {
-    return personaRepository.update(ctx, id, payload);
+    const stripped = stripPayloadByTipo(payload as PersonaPayload);
+    await checkUniqueness(ctx, stripped, id);
+
+    try {
+      return personaRepository.update(ctx, id, stripped);
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("unique constraint")) {
+        throw translateUniqueError(err.message);
+      }
+      throw err;
+    }
   },
 
   async delete(ctx: any, id: string) {

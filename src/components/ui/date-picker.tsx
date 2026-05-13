@@ -132,7 +132,7 @@ function ChevronRight() {
 
 // ── Dropdown panel ─────────────────────────────────────────────────────────────
 
-function DropdownPanel({ children }: { children: React.ReactNode }) {
+export function DropdownPanel({ children }: { children: React.ReactNode }) {
   return (
     <div className="absolute left-0 top-full z-50 mt-1.5 rounded-xl border border-zinc-200/90 bg-white/95 shadow-xl shadow-zinc-900/[0.08] ring-1 ring-zinc-900/[0.04] backdrop-blur-md">
       {children}
@@ -152,7 +152,7 @@ type CalendarMonthProps = {
   renderDay: RenderDayFn;
 };
 
-function CalendarMonth({
+export function CalendarMonth({
   year,
   month,
   onPrevMonth,

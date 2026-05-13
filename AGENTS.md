@@ -384,3 +384,12 @@ ActionIconButton controls:
 - sizing variants
 - destructive variants
 - interaction behavior
+
+---
+
+# Domain Documentation
+
+When a domain/module has dedicated documentation:
+- read it before implementing changes
+- prefer existing domain conventions
+- avoid introducing alternate patterns

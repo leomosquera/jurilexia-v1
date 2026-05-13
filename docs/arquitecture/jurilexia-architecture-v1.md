@@ -290,3 +290,8 @@ Avoid:
 - full-screen spinners
 - layout jumps
 - blocking overlays for simple operations
+
+---
+
+The platform may include domain-specific documentation files under:
+docs/modules/
